@@ -1,4 +1,3 @@
-
 # ============================================================================
 # BARBADOS TOURISM ARRIVALS — AIRPORT TRAFFIC VS. VISITOR ARRIVALS
 #
@@ -24,7 +23,7 @@
 #   by G. Addinton Forde (1987). Page numbers verified against source.
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 1.7
+# VERSION: 2.0
 # DATE: July 2026
 # ============================================================================
 
@@ -254,130 +253,49 @@ st.markdown("""
 # DATA
 # ============================================================================
 GAIA_PASSENGERS = {
-    2018: 2194931,
-    2019: 2298491,
-    2020: 768106,
-    2021: 596063,
-    2022: 1551170,
-    2023: 2103639,
-    2024: 2372645,
+    2018: 2194931, 2019: 2298491, 2020: 768106, 2021: 596063,
+    2022: 1551170, 2023: 2103639, 2024: 2372645,
 }
 
 BSS_STAY_OVER = {
-    2018: 678538,
-    2019: 520881,   # Jan–Sept YTD
-    2020: 195102,
-    2021: 144833,
-    2022: 539746,   # Revised
-    2023: 636540,
-    2024: 617314,   # Revised (Jan-Nov + revised Dec 79,303)
+    2018: 678538, 2019: 520881, 2020: 195102, 2021: 144833,
+    2022: 539746, 2023: 636540, 2024: 617314,
 }
 
 BSS_CRUISE = {
-    2018: 836155,
-    2019: 557171,   # Jan–Sept YTD
-    2020: 343791,
-    2021: 97450,
-    2022: 357853,
-    2023: 656904,
-    2024: 649125,   # Jan–Nov YTD (Dec pending)
+    2018: 836155, 2019: 557171, 2020: 343791, 2021: 97450,
+    2022: 357853, 2023: 656904, 2024: 649125,
 }
 
 BSS_BY_COUNTRY = {
-    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883,
-           "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280,
-           "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
-    2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208,
-           "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300,
-           "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
-    2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700,
-           "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400,
-           "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
-    2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607,
-           "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800,
-           "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
-    2022: {"U.S.A": 148326, "Canada": 55759, "U.K": 234510, "Other Europe": 19996,
-           "CARICOM": 39686, "Other Caribbean": 2140, "Latin/Central America": 3310,
-           "Africa": 900, "Asia": 3900, "Oceania": 700, "Other": 500},
-    2023: {"U.S.A": 176614, "Canada": 77140, "U.K": 243857, "Other Europe": 28306,
-           "CARICOM": 88524, "Other Caribbean": 2815, "Latin/Central America": 10164,
-           "Africa": 1856, "Asia": 5796, "Oceania": 1437, "Other": 300},
+    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
+    2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
+    2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700, "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400, "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
+    2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607, "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800, "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
+    2022: {"U.S.A": 148326, "Canada": 55759, "U.K": 234510, "Other Europe": 19996, "CARICOM": 39686, "Other Caribbean": 2140, "Latin/Central America": 3310, "Africa": 900, "Asia": 3900, "Oceania": 700, "Other": 500},
+    2023: {"U.S.A": 176614, "Canada": 77140, "U.K": 243857, "Other Europe": 28306, "CARICOM": 88524, "Other Caribbean": 2815, "Latin/Central America": 10164, "Africa": 1856, "Asia": 5796, "Oceania": 1437, "Other": 300},
 }
 
 BSS_PURPOSE = {
-    2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304,
-           "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204,
-           "Sports": 6466, "Intransit": 10432, "Other": 10533},
-    2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347,
-           "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330,
-           "Sports": 5140, "Intransit": 17773, "Other": 4928},
-    2023: {"Recreation": 516496, "Holiday": 428574, "Visiting Friends": 52293,
-           "Business": 66815, "Study": 9365, "Health Care": 1760, "Honeymoon": 20345,
-           "Sports": 7381, "Intransit": 19421, "Other": 22683},
+    2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
+    2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
+    2023: {"Recreation": 516496, "Holiday": 428574, "Visiting Friends": 52293, "Business": 66815, "Study": 9365, "Health Care": 1760, "Honeymoon": 20345, "Sports": 7381, "Intransit": 19421, "Other": 22683},
 }
 
 BSS_LENGTH = {
-    2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041,
-           "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303,
-           "29-182 Days": 33513, "Avg": 10.51},
-    2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232,
-           "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405,
-           "29-182 Days": 26835, "Avg": 14.67},
-    2023: {"1 Day": 78346, "2-3 Days": 63359, "4-7 Days": 223892,
-           "8-14 Days": 196328, "15-21 Days": 34978, "22-28 Days": 10053,
-           "29-182 Days": 29584, "Avg": 11.92},
+    2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
+    2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
+    2023: {"1 Day": 78346, "2-3 Days": 63359, "4-7 Days": 223892, "8-14 Days": 196328, "15-21 Days": 34978, "22-28 Days": 10053, "29-182 Days": 29584, "Avg": 11.92},
 }
 
 PROVERBS = {
-    "overview": {
-        "text": "Duh is more in de mortar dan de pestle.",
-        "meaning": "There is more to the issue than appears on the surface.",
-        "page": 16,
-        "section": "Proverbs Based on Household Articles",
-        "why": "The airport number is the pestle — visible, loud, big. The tourist number is the mortar — it holds the actual substance. There is more to this story than the headline figure."
-    },
-    "streams": {
-        "text": "De hen dat cackle lay de egg.",
-        "meaning": "The person who has made the outcry is the one responsible.",
-        "page": 2,
-        "section": "Proverbs Based on Animals",
-        "why": "Cruise lines make the loudest noise — big ships, big passenger counts. But the stay-over visitor is the one laying the egg — staying overnight, spending in hotels, restaurants, and shops."
-    },
-    "year": {
-        "text": "Mek-sure better dan cock-sure.",
-        "meaning": "It is better to make absolutely sure that everything is alright, than to assume that all is well.",
-        "page": 29,
-        "section": "Proverbs Based on Human Relationships",
-        "why": "Verify every figure. The 2022 and 2024 BSS revisions prove why this matters — preliminary numbers were revised upward and downward. Do not assume; check."
-    },
-    "country": {
-        "text": "When yuh neighbour beard ketch fire, wet yuh own.",
-        "meaning": "Take warning from the misfortune of others.",
-        "page": 31,
-        "section": "Proverbs Based on Nature",
-        "why": "Watch the source market shifts. The UK remains dominant, but the USA and CARICOM are growing. Watch what is happening in other markets and prepare your own."
-    },
-    "cruise": {
-        "text": "De sea en' got nuh back door.",
-        "meaning": "The sea is not a safe place, as there is no guarantee that you will get back out.",
-        "page": 32,
-        "section": "Proverbs Based on Nature",
-        "why": "Both visitor streams matter. Neither is an exit from the other. The cruise passenger and the stay-over visitor are two parts of the same tourism economy — and both must be counted and understood."
-    },
-    "divergence": {
-        "text": "Cockroach en' had no right at hen party.",
-        "meaning": "It is foolish to get oneself into situations with which one cannot cope.",
-        "page": 1,
-        "section": "Proverbs Based on Animals",
-        "why": "The airport is not the tourist industry. It is the gate. Do not confuse the two. The airport counts everyone through the terminal; the BSS counts only the tourists. Each has its place — but they are not the same."
-    },
-    "conclusion": {
-        "text": "Wha' do in de dark does come out in de light.",
-        "meaning": "It is impossible to hide all of one's actions.",
-        "page": 33,
-        "section": "Proverbs Based on Nature",
-        "why": "The numbers are public. The gap is visible. The truth will be seen. This dashboard simply puts the two sources side by side — and lets the reader see what they measure."
-    },
+    "overview": {"text": "Duh is more in de mortar dan de pestle.", "meaning": "There is more to the issue than appears on the surface.", "page": 16, "section": "Proverbs Based on Household Articles", "why": "The airport number is the pestle — visible, loud, big. The tourist number is the mortar — it holds the actual substance. There is more to this story than the headline figure."},
+    "streams": {"text": "De hen dat cackle lay de egg.", "meaning": "The person who has made the outcry is the one responsible.", "page": 2, "section": "Proverbs Based on Animals", "why": "Cruise lines make the loudest noise — big ships, big passenger counts. But the stay-over visitor is the one laying the egg — staying overnight, spending in hotels, restaurants, and shops."},
+    "year": {"text": "Mek-sure better dan cock-sure.", "meaning": "It is better to make absolutely sure that everything is alright, than to assume that all is well.", "page": 29, "section": "Proverbs Based on Human Relationships", "why": "Verify every figure. The 2022 and 2024 BSS revisions prove why this matters — preliminary numbers were revised upward and downward. Do not assume; check."},
+    "country": {"text": "When yuh neighbour beard ketch fire, wet yuh own.", "meaning": "Take warning from the misfortune of others.", "page": 31, "section": "Proverbs Based on Nature", "why": "Watch the source market shifts. The UK remains dominant, but the USA and CARICOM are growing. Watch what is happening in other markets and prepare your own."},
+    "cruise": {"text": "De sea en' got nuh back door.", "meaning": "The sea is not a safe place, as there is no guarantee that you will get back out.", "page": 32, "section": "Proverbs Based on Nature", "why": "Both visitor streams matter. Neither is an exit from the other. The cruise passenger and the stay-over visitor are two parts of the same tourism economy — and both must be counted and understood."},
+    "divergence": {"text": "Cockroach en' had no right at hen party.", "meaning": "It is foolish to get oneself into situations with which one cannot cope.", "page": 1, "section": "Proverbs Based on Animals", "why": "The airport is not the tourist industry. It is the gate. Do not confuse the two. The airport counts everyone through the terminal; the BSS counts only the tourists. Each has its place — but they are not the same."},
+    "conclusion": {"text": "Wha' do in de dark does come out in de light.", "meaning": "It is impossible to hide all of one's actions.", "page": 33, "section": "Proverbs Based on Nature", "why": "The numbers are public. The gap is visible. The truth will be seen. This dashboard simply puts the two sources side by side — and lets the reader see what they measure."},
 }
 
 # ============================================================================
@@ -443,7 +361,6 @@ def render_overview():
 
     st.markdown("### 📊 The Three Numbers — 2024")
     col1, col2, col3 = st.columns(3)
-
     with col1:
         st.markdown(f"""
         <div class="metric-card" style="border-left:4px solid #3B82F6;">
@@ -506,13 +423,10 @@ def render_overview():
         marker=dict(size=6)
     ))
     fig.update_layout(
-        height=420,
-        showlegend=True,
+        height=420, showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-        hovermode="x unified",
-        margin=dict(l=40, r=40, t=40, b=40),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        hovermode="x unified", margin=dict(l=40, r=40, t=40, b=40),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         title="Airport Traffic vs. Visitor Arrivals (2018–2024)",
     )
     fig.update_yaxes(title_text="Number of People", tickformat=",")
@@ -567,7 +481,6 @@ def render_streams():
     </div>
     """, unsafe_allow_html=True)
 
-    # Updated to a Grouped Bar Chart for clearer comparison, with better formatting
     cruise_data = [
         {"Year": "2023", "Type": "Intransit", "Passengers": 442765},
         {"Year": "2023", "Type": "Landed", "Passengers": 214139},
@@ -577,25 +490,17 @@ def render_streams():
     df_cruise = pd.DataFrame(cruise_data)
     
     fig = px.bar(
-        df_cruise, 
-        x="Year", 
-        y="Passengers", 
-        color="Type", 
-        barmode="group",
+        df_cruise, x="Year", y="Passengers", color="Type", barmode="group",
         title="Cruise Arrivals: Intransit vs. Landed (2023 vs 2024)",
         color_discrete_map={"Intransit": "#3B82F6", "Landed": "#F59E0B"}
     )
     fig.update_layout(
-        height=400,
-        paper_bgcolor="rgba(0,0,0,0)", 
-        plot_bgcolor="rgba(0,0,0,0)",
-        yaxis_title="Passengers", 
-        yaxis_tickformat=",",
+        height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        yaxis_title="Passengers", yaxis_tickformat=",",
         legend_title_text="Passenger Type",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
         hovermode="x unified"
     )
-    # Format the hover tooltips to show commas, but leave the bars clean
     fig.update_traces(
         hovertemplate="<b>Year: %{x}</b><br>Type: %{fullData.name}<br>Passengers: %{y:,.0f}<extra></extra>"
     )
@@ -655,16 +560,19 @@ def render_year_explorer():
         country_data = BSS_BY_COUNTRY.get(year, {})
         if country_data:
             df_country = pd.DataFrame(list(country_data.items()), columns=["Country", "Arrivals"])
-            df_country["Formatted"] = df_country["Arrivals"].apply(lambda x: f"{x:,.0f}")
             df_country = df_country.sort_values("Arrivals", ascending=True)
             
             fig = px.bar(df_country, x="Arrivals", y="Country", orientation="h",
                          color="Arrivals", color_continuous_scale="Blues",
                          title=f"Stay-Over Arrivals by Country ({year})",
-                         hover_data={"Arrivals": ":,.0f", "Formatted": False})
+                         hover_data={"Arrivals": ":,.0f"},
+                         text_auto='.0f')
+            
             fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                               showlegend=False, coloraxis_showscale=False,
                               xaxis_tickformat=",")
+            
+            fig.update_traces(textfont_size=10, textangle=0, textposition="outside", cliponaxis=False)
             st.plotly_chart(fig, use_container_width=True)
             st.caption(f"Source: Barbados Statistical Service, Visitor Arrivals Statistics ({year})")
 
@@ -687,15 +595,19 @@ def render_year_explorer():
         if length_data:
             avg = length_data.pop("Avg", None)
             df_length = pd.DataFrame(list(length_data.items()), columns=["Category", "Arrivals"])
-            df_length["Formatted"] = df_length["Arrivals"].apply(lambda x: f"{x:,.0f}")
             
-            fig = px.bar(df_length, x="Category", y="Arrivals", color="Arrivals",
-                         color_continuous_scale="Teal", title=f"Stay-Over Arrivals by Length of Stay ({year})",
-                         hover_data={"Arrivals": ":,.0f", "Formatted": False})
+            fig = px.bar(df_length, x="Category", y="Arrivals", 
+                         title=f"Stay-Over Arrivals by Length of Stay ({year})",
+                         color_discrete_sequence=["#00267F"],
+                         hover_data={"Arrivals": ":,.0f"},
+                         text_auto='.0f')
+            
             fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                              showlegend=False, coloraxis_showscale=False,
-                              yaxis_tickformat=",")
+                              showlegend=False, yaxis_tickformat=",")
+            
+            fig.update_traces(textfont_size=10, textangle=0, textposition="outside", cliponaxis=False)
             st.plotly_chart(fig, use_container_width=True)
+            
             if avg:
                 st.markdown(f"""
                 <div class="metric-card" style="border-left:4px solid #8B5CF6; max-width:280px;">
@@ -752,7 +664,6 @@ def render_country():
         change = v2023 - v2018
         pct = (change / v2018 * 100) if v2018 > 0 else 0
         
-        # Calculate % of Total for context
         total_2018 = sum(BSS_BY_COUNTRY[2018].values())
         total_2023 = sum(BSS_BY_COUNTRY[2023].values())
         pct_2018 = (v2018 / total_2018 * 100) if total_2018 > 0 else 0
@@ -912,6 +823,7 @@ def render_conclusion():
 
     render_proverb("conclusion")
 
+    # Part 1: The main conclusion text
     st.markdown("""
     <div class="conclusion-section">
         <h2>The Numbers Tell a Story</h2>
@@ -927,7 +839,27 @@ def render_conclusion():
         In 2024, over <strong>2.37 million</strong> people passed through GAIA. But only <strong>617,000</strong> were stay-over visitors. 
         The gap is more than the entire population of Barbados.
         </p>
-        <p style="color:#FFC726; font-weight:700; font-size:1.15rem; margin-top:16px; line-height:1.5;">
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Part 2: The World Cup Box (Rendered separately to fix the HTML bug)
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%); 
+                padding: 20px 25px; border-radius: 12px; border-left: 6px solid #FFC726; 
+                margin: 15px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="color: #FFC726; margin-top: 0; font-size: 1.3rem;">🏏 The 2024 World Cup Paradox</h3>
+        <p style="color: #F1F5F9; font-size: 0.95rem; line-height: 1.6;">
+        In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. Yet, actual stay-over tourists fell by 3% compared to 2023 (from 636,540 to 617,314). 
+        <br><br>
+        The World Cup filled the planes and the cruise ships, but it did not fill the hotel beds for the year. Mega-events boost airport traffic; they do not automatically grow the stay-over tourism product.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Part 3: The final punchline
+    st.markdown("""
+    <div class="conclusion-section" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
+        <p style="color:#FFC726; font-weight:700; font-size:1.15rem; line-height:1.5; margin-bottom: 0;">
         This is not a criticism of either source.<br>
         It is simply what happens when you measure two different things.<br>
         The airport measures traffic. The BSS measures tourism.<br>
@@ -936,6 +868,7 @@ def render_conclusion():
     </div>
     """, unsafe_allow_html=True)
 
+    # Sources box
     st.markdown("""
     <div class="evidence-box">
         <div class="evidence-label">Data Sources</div>
@@ -948,6 +881,7 @@ def render_conclusion():
     </div>
     """, unsafe_allow_html=True)
 
+    # About box
     st.markdown("""
     <div style="background:#F8F5F0; padding:20px 24px; border-radius:10px; border:2px solid #00267F; margin:20px 0;">
         <h4 style="color:#00267F; margin-bottom:8px;">📖 About This Dashboard</h4>
@@ -989,36 +923,28 @@ def generate_html_summary():
         </tr>
         """
 
-    # Country breakdown table with % of Total
     country_years = [2018, 2022, 2023]
-    countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe", "Other Caribbean",
-                 "Latin/Central America", "Africa", "Asia", "Oceania", "Other"]
-    
+    countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe", "Other Caribbean", "Latin/Central America", "Africa", "Asia", "Oceania", "Other"]
     country_header = "<tr><th>Country</th>"
     for y in country_years:
         country_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
     country_header += "</tr>"
-
     country_body = ""
     for c in countries:
         country_body += f"<tr><td>{c}</td>"
         for y in country_years:
             val = BSS_BY_COUNTRY.get(y, {}).get(c, 0)
-            total = BSS_STAY_OVER.get(y, 1) # Avoid div by zero
+            total = BSS_STAY_OVER.get(y, 1)
             pct = (val / total * 100) if total > 0 else 0
             country_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         country_body += "</tr>"
 
-    # Purpose breakdown table with % of Total
     purpose_years = [2018, 2022, 2023]
-    purposes = ["Recreation", "Holiday", "Visiting Friends", "Business", "Study",
-                "Health Care", "Honeymoon", "Sports", "Intransit", "Other"]
-    
+    purposes = ["Recreation", "Holiday", "Visiting Friends", "Business", "Study", "Health Care", "Honeymoon", "Sports", "Intransit", "Other"]
     purpose_header = "<tr><th>Purpose</th>"
     for y in purpose_years:
         purpose_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
     purpose_header += "</tr>"
-
     purpose_body = ""
     for p in purposes:
         purpose_body += f"<tr><td>{p}</td>"
@@ -1029,15 +955,12 @@ def generate_html_summary():
             purpose_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         purpose_body += "</tr>"
 
-    # Length of stay table with % of Total
     length_years = [2018, 2022, 2023]
     lengths = ["1 Day", "2-3 Days", "4-7 Days", "8-14 Days", "15-21 Days", "22-28 Days", "29-182 Days"]
-    
     length_header = "<tr><th>Category</th>"
     for y in length_years:
         length_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
     length_header += "</tr>"
-
     length_body = ""
     for l in lengths:
         length_body += f"<tr><td>{l}</td>"
@@ -1047,7 +970,6 @@ def generate_html_summary():
             pct = (val / total * 100) if total > 0 else 0
             length_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         length_body += "</tr>"
-    
     length_body += "<tr style='font-weight:bold;'><td>Average (days)</td>"
     for y in length_years:
         avg = BSS_LENGTH.get(y, {}).get("Avg", 0)
@@ -1073,6 +995,7 @@ def generate_html_summary():
         .proverb-source {{ color: #BFDBFE; font-size: 0.7rem; }}
         .footer {{ margin-top: 30px; padding-top: 20px; border-top: 3px solid #00267F; text-align: center; font-size: 0.8rem; color: #475569; }}
         .note {{ background: #FEF3C7; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; }}
+        .worldcup {{ background: #EFF6FF; color: #1E3A8A; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 16px 0; font-size: 0.85rem; border: 1px solid #93C5FD; }}
     </style></head>
     <body><div class="container">
         <h1>✈️ Barbados Tourism Arrivals</h1>
@@ -1091,6 +1014,10 @@ def generate_html_summary():
 
         <div class="note">
             <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023.
+        </div>
+
+        <div class="worldcup">
+            <strong>🏏 The 2024 World Cup Paradox:</strong> In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. Yet, actual stay-over tourists fell by 3% compared to 2023 (from 636,540 to 617,314). The World Cup filled the planes and the cruise ships, but it did not fill the hotel beds for the year. Mega-events boost airport traffic; they do not automatically grow the stay-over tourism product.
         </div>
 
         <h2>2. Stay-Over Arrivals by Country of Residence</h2>
