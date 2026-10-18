@@ -1,0 +1,1210 @@
+
+# ============================================================================
+# BARBADOS TOURISM ARRIVALS — AIRPORT TRAFFIC VS. VISITOR ARRIVALS
+#
+# A Streamlit dashboard comparing three measures:
+#   1. GAIA Inc. Total Passengers (airport traffic)
+#   2. BSS Stay-Over Arrivals (actual overnight visitors)
+#   3. BSS Cruise Arrivals (cruise passengers)
+#
+# SOURCES:
+#   Airport Traffic:
+#     GAIA Inc. Passenger & Cargo Statistics (website)
+#     NOT audited financial statements. Operational traffic reports.
+#   Visitor Arrivals:
+#     Barbados Statistical Service (BSS), Visitor Arrivals Statistics
+#     (revised where applicable — see 2022 and 2024 revision notes)
+#
+# FRAMING:
+#   This dashboard does not claim that either number is wrong.
+#   It shows what each source measures, and how far apart they are.
+#
+# PROVERBS:
+#   All from "De Mortar-Pestle: A Collection of Barbadian Proverbs"
+#   by G. Addinton Forde (1987). Page numbers verified against source.
+#
+# AUTHOR & COMPILER: Matthew A. A. Blackman
+# VERSION: 1.7
+# DATE: July 2026
+# ============================================================================
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from datetime import datetime
+import base64
+import io
+
+# ============================================================================
+# PAGE CONFIGURATION
+# ============================================================================
+st.set_page_config(
+    page_title="Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals",
+    page_icon="✈️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ============================================================================
+# CUSTOM CSS
+# ============================================================================
+st.markdown("""
+<style>
+.main-header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: #00267F;
+    text-align: center;
+    padding: 10px 0;
+}
+.main-subheader {
+    text-align: center;
+    font-size: 1.05rem;
+    color: #475569;
+    margin-top: -5px;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+.year-header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #00267F;
+    margin-top: 0.2rem;
+    margin-bottom: 0.3rem;
+}
+.proverb-card {
+    background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%);
+    color: #FFFFFF;
+    padding: 18px 22px;
+    border-radius: 12px;
+    margin: 10px 0;
+    border-left: 6px solid #FFC726;
+}
+.proverb-text {
+    font-size: 1.25rem;
+    font-style: italic;
+    color: #FFC726;
+    font-weight: 600;
+}
+.proverb-meaning {
+    color: #DBEAFE;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+.proverb-source {
+    color: #BFDBFE;
+    font-size: 0.7rem;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+.proverb-why {
+    color: #F1F5F9;
+    font-size: 0.82rem;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+    border-left: 3px solid #FFC726;
+}
+.metric-card {
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 0.8rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    height: 100%;
+}
+.metric-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #00267F;
+}
+.metric-label {
+    font-size: 0.7rem;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.metric-context {
+    font-size: 0.72rem;
+    color: #64748B;
+    margin-top: 2px;
+}
+.issue-critical {
+    background: #FEF2F2;
+    color: #7F1D1D;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #DC2626;
+    margin: 6px 0;
+    font-size: 0.92rem;
+    border: 1px solid #FCA5A5;
+}
+.issue-critical strong { color: #7F1D1D; }
+.issue-warning {
+    background: #FFFBEB;
+    color: #78350F;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #F59E0B;
+    margin: 6px 0;
+    font-size: 0.92rem;
+    border: 1px solid #FCD34D;
+}
+.issue-warning strong { color: #78350F; }
+.issue-info {
+    background: #EFF6FF;
+    color: #1E3A8A;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #3B82F6;
+    margin: 6px 0;
+    font-size: 0.92rem;
+    border: 1px solid #93C5FD;
+}
+.issue-info strong { color: #1E3A8A; }
+.issue-good {
+    background: #ECFDF5;
+    color: #064E3B;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #10B981;
+    margin: 6px 0;
+    font-size: 0.92rem;
+    border: 1px solid #6EE7B7;
+}
+.issue-good strong { color: #064E3B; }
+.issue-unknown {
+    background: #F5F3FF;
+    color: #4C1D95;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #8B5CF6;
+    margin: 6px 0;
+    font-size: 0.92rem;
+    border: 1px solid #C4B5FD;
+}
+.issue-unknown strong { color: #4C1D95; }
+.barbados-flag-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #00267F 0%, #FFC726 50%, #00267F 100%);
+    margin: 5px 0 10px 0;
+    border-radius: 2px;
+}
+.conclusion-section {
+    background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%);
+    color: #FFFFFF;
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border-left: 6px solid #FFC726;
+}
+.conclusion-section h2 {
+    color: #FFC726;
+    font-size: 1.6rem;
+    margin-top: 0;
+}
+.conclusion-section p { color: #F1F5F9; }
+.conclusion-section .punchline { color: #FFC726; }
+.evidence-box {
+    background: #F8FAFC;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    border-left: 4px solid #00267F;
+    border: 1px solid #E2E8F0;
+}
+.evidence-label {
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.evidence-text {
+    font-size: 0.9rem;
+    color: #0F172A;
+    line-height: 1.6;
+    margin-top: 4px;
+}
+.evidence-source {
+    font-size: 0.7rem;
+    color: #475569;
+    margin-top: 6px;
+    font-style: italic;
+}
+.data-scope-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.badge-traffic { background: #DBEAFE; color: #1E40AF; }
+.badge-bss { background: #D1FAE5; color: #065F46; }
+.badge-revised { background: #FEF3C7; color: #92400E; }
+</style>
+""", unsafe_allow_html=True)
+
+# ============================================================================
+# DATA
+# ============================================================================
+GAIA_PASSENGERS = {
+    2018: 2194931,
+    2019: 2298491,
+    2020: 768106,
+    2021: 596063,
+    2022: 1551170,
+    2023: 2103639,
+    2024: 2372645,
+}
+
+BSS_STAY_OVER = {
+    2018: 678538,
+    2019: 520881,   # Jan–Sept YTD
+    2020: 195102,
+    2021: 144833,
+    2022: 539746,   # Revised
+    2023: 636540,
+    2024: 617314,   # Revised (Jan-Nov + revised Dec 79,303)
+}
+
+BSS_CRUISE = {
+    2018: 836155,
+    2019: 557171,   # Jan–Sept YTD
+    2020: 343791,
+    2021: 97450,
+    2022: 357853,
+    2023: 656904,
+    2024: 649125,   # Jan–Nov YTD (Dec pending)
+}
+
+BSS_BY_COUNTRY = {
+    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883,
+           "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280,
+           "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
+    2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208,
+           "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300,
+           "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
+    2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700,
+           "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400,
+           "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
+    2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607,
+           "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800,
+           "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
+    2022: {"U.S.A": 148326, "Canada": 55759, "U.K": 234510, "Other Europe": 19996,
+           "CARICOM": 39686, "Other Caribbean": 2140, "Latin/Central America": 3310,
+           "Africa": 900, "Asia": 3900, "Oceania": 700, "Other": 500},
+    2023: {"U.S.A": 176614, "Canada": 77140, "U.K": 243857, "Other Europe": 28306,
+           "CARICOM": 88524, "Other Caribbean": 2815, "Latin/Central America": 10164,
+           "Africa": 1856, "Asia": 5796, "Oceania": 1437, "Other": 300},
+}
+
+BSS_PURPOSE = {
+    2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304,
+           "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204,
+           "Sports": 6466, "Intransit": 10432, "Other": 10533},
+    2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347,
+           "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330,
+           "Sports": 5140, "Intransit": 17773, "Other": 4928},
+    2023: {"Recreation": 516496, "Holiday": 428574, "Visiting Friends": 52293,
+           "Business": 66815, "Study": 9365, "Health Care": 1760, "Honeymoon": 20345,
+           "Sports": 7381, "Intransit": 19421, "Other": 22683},
+}
+
+BSS_LENGTH = {
+    2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041,
+           "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303,
+           "29-182 Days": 33513, "Avg": 10.51},
+    2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232,
+           "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405,
+           "29-182 Days": 26835, "Avg": 14.67},
+    2023: {"1 Day": 78346, "2-3 Days": 63359, "4-7 Days": 223892,
+           "8-14 Days": 196328, "15-21 Days": 34978, "22-28 Days": 10053,
+           "29-182 Days": 29584, "Avg": 11.92},
+}
+
+PROVERBS = {
+    "overview": {
+        "text": "Duh is more in de mortar dan de pestle.",
+        "meaning": "There is more to the issue than appears on the surface.",
+        "page": 16,
+        "section": "Proverbs Based on Household Articles",
+        "why": "The airport number is the pestle — visible, loud, big. The tourist number is the mortar — it holds the actual substance. There is more to this story than the headline figure."
+    },
+    "streams": {
+        "text": "De hen dat cackle lay de egg.",
+        "meaning": "The person who has made the outcry is the one responsible.",
+        "page": 2,
+        "section": "Proverbs Based on Animals",
+        "why": "Cruise lines make the loudest noise — big ships, big passenger counts. But the stay-over visitor is the one laying the egg — staying overnight, spending in hotels, restaurants, and shops."
+    },
+    "year": {
+        "text": "Mek-sure better dan cock-sure.",
+        "meaning": "It is better to make absolutely sure that everything is alright, than to assume that all is well.",
+        "page": 29,
+        "section": "Proverbs Based on Human Relationships",
+        "why": "Verify every figure. The 2022 and 2024 BSS revisions prove why this matters — preliminary numbers were revised upward and downward. Do not assume; check."
+    },
+    "country": {
+        "text": "When yuh neighbour beard ketch fire, wet yuh own.",
+        "meaning": "Take warning from the misfortune of others.",
+        "page": 31,
+        "section": "Proverbs Based on Nature",
+        "why": "Watch the source market shifts. The UK remains dominant, but the USA and CARICOM are growing. Watch what is happening in other markets and prepare your own."
+    },
+    "cruise": {
+        "text": "De sea en' got nuh back door.",
+        "meaning": "The sea is not a safe place, as there is no guarantee that you will get back out.",
+        "page": 32,
+        "section": "Proverbs Based on Nature",
+        "why": "Both visitor streams matter. Neither is an exit from the other. The cruise passenger and the stay-over visitor are two parts of the same tourism economy — and both must be counted and understood."
+    },
+    "divergence": {
+        "text": "Cockroach en' had no right at hen party.",
+        "meaning": "It is foolish to get oneself into situations with which one cannot cope.",
+        "page": 1,
+        "section": "Proverbs Based on Animals",
+        "why": "The airport is not the tourist industry. It is the gate. Do not confuse the two. The airport counts everyone through the terminal; the BSS counts only the tourists. Each has its place — but they are not the same."
+    },
+    "conclusion": {
+        "text": "Wha' do in de dark does come out in de light.",
+        "meaning": "It is impossible to hide all of one's actions.",
+        "page": 33,
+        "section": "Proverbs Based on Nature",
+        "why": "The numbers are public. The gap is visible. The truth will be seen. This dashboard simply puts the two sources side by side — and lets the reader see what they measure."
+    },
+}
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+def format_number(n):
+    if n is None:
+        return "N/A"
+    return f"{n:,.0f}"
+
+def format_pct(n):
+    if n is None:
+        return "N/A"
+    return f"{n:.1f}%"
+
+def get_badge(source):
+    if source == "traffic":
+        return '<span class="data-scope-badge badge-traffic">📊 GAIA Inc. Traffic Statistics</span>'
+    elif source == "bss":
+        return '<span class="data-scope-badge badge-bss">📋 BSS Visitor Arrivals</span>'
+    elif source == "revised":
+        return '<span class="data-scope-badge badge-revised">📝 BSS Revised</span>'
+    return ""
+
+def render_proverb(key):
+    p = PROVERBS[key]
+    st.markdown(f"""
+    <div class="proverb-card">
+        <div style="color:#BFDBFE;font-size:0.75rem;">📖 Bajan Proverb · {p['section']}</div>
+        <div class="proverb-text">"{p['text']}"</div>
+        <div class="proverb-meaning">— {p['meaning']}</div>
+        <div class="proverb-source">Source: "De Mortar-Pestle" by G. Addinton Forde (1987), p. {p['page']}</div>
+        <div class="proverb-why">💡 <strong style="color:#FFC726;">Why this proverb fits:</strong> {p['why']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# VIEW: OVERVIEW
+# ============================================================================
+def render_overview():
+    st.markdown("""
+    <div class="main-header">✈️ Barbados Tourism Arrivals</div>
+    <div class="main-subheader">Airport Traffic vs. Visitor Arrivals · 2018–2024</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="background:#EFF6FF; color:#1E3A8A; padding:16px 20px; border-radius:10px;
+                border-left:5px solid #00267F; margin:15px 0;
+                border-top:1px solid #93C5FD; border-right:1px solid #93C5FD; border-bottom:1px solid #93C5FD;">
+        <p style="margin:0; font-size:0.95rem; color:#1E3A8A; line-height:1.7;">
+        <strong style="color:#1E3A8A;">The airport counts everyone through the terminal.</strong>
+        The Barbados Statistical Service counts only the stay-over visitors.
+        <strong style="color:#1E3A8A;">These are not the same number</strong> — and the gap between them is the story.
+        </p>
+        <p style="margin:8px 0 0 0; font-size:0.9rem; color:#1E3A8A; line-height:1.7; font-style:italic;">
+        This dashboard does not claim that either number is wrong. It shows what each source measures, and how far apart they are.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("overview")
+
+    st.markdown("### 📊 The Three Numbers — 2024")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #3B82F6;">
+            <div class="metric-label">GAIA Total Passengers</div>
+            <div class="metric-value" style="color:#1D4ED8;">{format_number(GAIA_PASSENGERS[2024])}</div>
+            <div class="metric-context">{get_badge('traffic')}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #10B981;">
+            <div class="metric-label">BSS Stay-Over Arrivals</div>
+            <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[2024])}</div>
+            <div class="metric-context">{get_badge('revised')}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #F59E0B;">
+            <div class="metric-label">BSS Cruise Arrivals</div>
+            <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[2024])}</div>
+            <div class="metric-context">{get_badge('bss')} Jan-Nov</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    gap = GAIA_PASSENGERS[2024] - BSS_STAY_OVER[2024]
+    st.markdown(f"""
+    <div class="issue-critical" style="margin-top:14px;">
+        <strong>🔍 The Gap in 2024:</strong> {format_number(gap)} passengers passed through GAIA who were not stay-over visitors.
+        That is more than the entire population of Barbados. The gap is the story.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="issue-unknown" style="margin-top:10px;">
+        <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 📈 The Divergence — 2018–2024")
+    years = sorted(GAIA_PASSENGERS.keys())
+    gaia_vals = [GAIA_PASSENGERS[y] for y in years]
+    bss_vals = [BSS_STAY_OVER[y] for y in years]
+    cruise_vals = [BSS_CRUISE[y] for y in years]
+
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+    fig.add_trace(go.Scatter(
+        x=years, y=gaia_vals, name="GAIA Total Passengers",
+        line=dict(color="#3B82F6", width=3), mode="lines+markers",
+        marker=dict(size=8)
+    ))
+    fig.add_trace(go.Scatter(
+        x=years, y=bss_vals, name="BSS Stay-Over Arrivals",
+        line=dict(color="#10B981", width=3), mode="lines+markers",
+        marker=dict(size=8)
+    ))
+    fig.add_trace(go.Scatter(
+        x=years, y=cruise_vals, name="BSS Cruise Arrivals",
+        line=dict(color="#F59E0B", width=2, dash="dash"), mode="lines+markers",
+        marker=dict(size=6)
+    ))
+    fig.update_layout(
+        height=420,
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+        hovermode="x unified",
+        margin=dict(l=40, r=40, t=40, b=40),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        title="Airport Traffic vs. Visitor Arrivals (2018–2024)",
+    )
+    fig.update_yaxes(title_text="Number of People", tickformat=",")
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.caption("Note: 2019 BSS figures are Jan–Sept YTD only. 2022 and 2024 BSS figures are revised. See the Year-by-Year Explorer for full details.")
+
+# ============================================================================
+# VIEW: TWO VISITOR STREAMS
+# ============================================================================
+def render_streams():
+    st.markdown("""
+    <div class="main-header">🏝️ The Two Visitor Streams</div>
+    <div class="main-subheader">Stay-Over vs. Cruise — two parts of the same tourism economy</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("streams")
+
+    st.markdown("""
+    <div class="issue-info">
+        <strong>📌 The distinction:</strong> A <strong>stay-over visitor</strong> flies in, stays overnight, and spends money in hotels, restaurants, and shops. A <strong>cruise passenger</strong> arrives by ship — often for just a day — and may spend very little ashore. Both are counted by the BSS, but they are not the same visitor.
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #10B981;">
+            <div class="metric-label">Stay-Over Arrivals (2024)</div>
+            <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[2024])}</div>
+            <div class="metric-context">Actual overnight visitors</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #F59E0B;">
+            <div class="metric-label">Cruise Arrivals (2024, Jan–Nov)</div>
+            <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[2024])}</div>
+            <div class="metric-context">Cruise passengers</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("### 🚢 Intransit vs. Landed — 2023 vs. 2024")
+    st.markdown("""
+    <div style="background:#F8FAFC; padding:14px 18px; border-radius:10px; border:1px solid #E2E8F0;">
+        <p style="margin:0; font-size:0.9rem; color:#1E293B; line-height:1.7;">
+        <strong>Intransit passengers</strong> stay on the ship or pass through the terminal without formally entering the country.
+        <strong>Landed passengers</strong> disembark and may spend time ashore.
+        Both are counted in BSS cruise arrivals — but only landed passengers are potential spenders.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Updated to a Grouped Bar Chart for clearer comparison, with better formatting
+    cruise_data = [
+        {"Year": "2023", "Type": "Intransit", "Passengers": 442765},
+        {"Year": "2023", "Type": "Landed", "Passengers": 214139},
+        {"Year": "2024", "Type": "Intransit", "Passengers": 492725},
+        {"Year": "2024", "Type": "Landed", "Passengers": 156400},
+    ]
+    df_cruise = pd.DataFrame(cruise_data)
+    
+    fig = px.bar(
+        df_cruise, 
+        x="Year", 
+        y="Passengers", 
+        color="Type", 
+        barmode="group",
+        title="Cruise Arrivals: Intransit vs. Landed (2023 vs 2024)",
+        color_discrete_map={"Intransit": "#3B82F6", "Landed": "#F59E0B"}
+    )
+    fig.update_layout(
+        height=400,
+        paper_bgcolor="rgba(0,0,0,0)", 
+        plot_bgcolor="rgba(0,0,0,0)",
+        yaxis_title="Passengers", 
+        yaxis_tickformat=",",
+        legend_title_text="Passenger Type",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+        hovermode="x unified"
+    )
+    # Format the hover tooltips to show commas, but leave the bars clean
+    fig.update_traces(
+        hovertemplate="<b>Year: %{x}</b><br>Type: %{fullData.name}<br>Passengers: %{y:,.0f}<extra></extra>"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# ============================================================================
+# VIEW: YEAR-BY-YEAR EXPLORER
+# ============================================================================
+def render_year_explorer():
+    st.markdown("""
+    <div class="main-header">📅 Year-by-Year Explorer</div>
+    <div class="main-subheader">Select a year to see the full picture</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("year")
+
+    years = [2018, 2022, 2023, 2024]
+    year = st.selectbox("Select Year", years, index=len(years)-1)
+
+    st.markdown(f"## {year}")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #3B82F6;">
+            <div class="metric-label">GAIA Total Passengers</div>
+            <div class="metric-value" style="color:#1D4ED8;">{format_number(GAIA_PASSENGERS[year])}</div>
+            <div class="metric-context">{get_badge('traffic')}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #10B981;">
+            <div class="metric-label">BSS Stay-Over Arrivals</div>
+            <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[year])}</div>
+            <div class="metric-context">{get_badge('revised' if year in [2022, 2024] else 'bss')}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"""
+        <div class="metric-card" style="border-left:4px solid #F59E0B;">
+            <div class="metric-label">BSS Cruise Arrivals</div>
+            <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[year])}</div>
+            <div class="metric-context">{get_badge('bss')} {'(Jan-Nov)' if year == 2024 else ''}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    if year == 2024:
+        st.markdown("""
+        <div class="issue-unknown" style="margin-top:20px;">
+            <strong>⏳ BSS Detailed Breakdowns Pending:</strong> The Barbados Statistical Service has revised the December 2024 arrival numbers (downward from 87,112 to 79,303) due to IT issues at the Immigration Department. As a result, the full-year breakdowns for Country of Residence, Purpose of Visit, and Length of Stay for 2024 have not yet been published. We have used the revised total (617,314) for the main figures, but the detailed charts for 2024 are unavailable until the BSS releases the final tables.
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("### 🌍 Stay-Over Arrivals by Country of Residence")
+        country_data = BSS_BY_COUNTRY.get(year, {})
+        if country_data:
+            df_country = pd.DataFrame(list(country_data.items()), columns=["Country", "Arrivals"])
+            df_country["Formatted"] = df_country["Arrivals"].apply(lambda x: f"{x:,.0f}")
+            df_country = df_country.sort_values("Arrivals", ascending=True)
+            
+            fig = px.bar(df_country, x="Arrivals", y="Country", orientation="h",
+                         color="Arrivals", color_continuous_scale="Blues",
+                         title=f"Stay-Over Arrivals by Country ({year})",
+                         hover_data={"Arrivals": ":,.0f", "Formatted": False})
+            fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                              showlegend=False, coloraxis_showscale=False,
+                              xaxis_tickformat=",")
+            st.plotly_chart(fig, use_container_width=True)
+            st.caption(f"Source: Barbados Statistical Service, Visitor Arrivals Statistics ({year})")
+
+        st.markdown("### 🎯 Purpose of Visit")
+        purpose_data = BSS_PURPOSE.get(year, {})
+        if purpose_data:
+            df_purpose = pd.DataFrame(list(purpose_data.items()), columns=["Purpose", "Arrivals"])
+            df_purpose = df_purpose.sort_values("Arrivals", ascending=False)
+            fig = px.pie(df_purpose, values="Arrivals", names="Purpose", hole=0.4,
+                         title=f"Stay-Over Arrivals by Purpose of Visit ({year})",
+                         color_discrete_sequence=px.colors.sequential.Blues_r)
+            fig.update_traces(textposition="inside", textinfo="percent+label", textfont_size=10,
+                              hovertemplate="<b>%{label}</b><br>Arrivals: %{value:,.0f}<extra></extra>")
+            fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig, use_container_width=True)
+            st.caption(f"Source: Barbados Statistical Service, Visitor Arrivals Statistics ({year})")
+
+        st.markdown("### 📅 Length of Stay")
+        length_data = BSS_LENGTH.get(year, {})
+        if length_data:
+            avg = length_data.pop("Avg", None)
+            df_length = pd.DataFrame(list(length_data.items()), columns=["Category", "Arrivals"])
+            df_length["Formatted"] = df_length["Arrivals"].apply(lambda x: f"{x:,.0f}")
+            
+            fig = px.bar(df_length, x="Category", y="Arrivals", color="Arrivals",
+                         color_continuous_scale="Teal", title=f"Stay-Over Arrivals by Length of Stay ({year})",
+                         hover_data={"Arrivals": ":,.0f", "Formatted": False})
+            fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                              showlegend=False, coloraxis_showscale=False,
+                              yaxis_tickformat=",")
+            st.plotly_chart(fig, use_container_width=True)
+            if avg:
+                st.markdown(f"""
+                <div class="metric-card" style="border-left:4px solid #8B5CF6; max-width:280px;">
+                    <div class="metric-label">Average Length of Stay</div>
+                    <div class="metric-value" style="color:#6D28D9;">{avg:.1f} days</div>
+                    <div class="metric-context">Per stay-over visitor</div>
+                </div>
+                """, unsafe_allow_html=True)
+            st.caption(f"Source: Barbados Statistical Service, Visitor Arrivals Statistics ({year})")
+
+# ============================================================================
+# VIEW: COUNTRY BREAKDOWN
+# ============================================================================
+def render_country():
+    st.markdown("""
+    <div class="main-header">🌍 Country Breakdown</div>
+    <div class="main-subheader">Where do Barbados' stay-over visitors come from?</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("country")
+
+    st.markdown("""
+    <div class="issue-info">
+        <strong>📌 The dominant markets:</strong> The U.K., U.S.A., and Canada have consistently been the top three source markets. But CARICOM has grown significantly, and Other Europe and Latin/Central America are shifting. Watch the trends, not just the totals.
+    </div>
+    """, unsafe_allow_html=True)
+
+    years = [2018, 2022, 2023]
+    countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe"]
+
+    fig = go.Figure()
+    colors = {"U.K": "#00267F", "U.S.A": "#3B82F6", "Canada": "#F59E0B", "CARICOM": "#10B981", "Other Europe": "#8B5CF6"}
+    for country in countries:
+        vals = [BSS_BY_COUNTRY[y].get(country, 0) for y in years]
+        fig.add_trace(go.Scatter(x=years, y=vals, name=country,
+                                 line=dict(color=colors[country], width=3), mode="lines+markers",
+                                 hovertemplate=f"{country}: %{{y:,.0f}}<extra></extra>"))
+    fig.update_layout(
+        height=420, title="Stay-Over Arrivals by Major Source Market",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        yaxis_title="Arrivals", yaxis_tickformat=",",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+        hovermode="x unified"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("Source: Barbados Statistical Service, Visitor Arrivals Statistics. 2019, 2020, and 2021 omitted because full-year breakdowns are not available or are pandemic-affected. 2024 is pending BSS release.")
+
+    st.markdown("### 📊 2023 vs. 2018 — Market Shift")
+    rows = []
+    for c in countries:
+        v2018 = BSS_BY_COUNTRY[2018].get(c, 0)
+        v2023 = BSS_BY_COUNTRY[2023].get(c, 0)
+        change = v2023 - v2018
+        pct = (change / v2018 * 100) if v2018 > 0 else 0
+        
+        # Calculate % of Total for context
+        total_2018 = sum(BSS_BY_COUNTRY[2018].values())
+        total_2023 = sum(BSS_BY_COUNTRY[2023].values())
+        pct_2018 = (v2018 / total_2018 * 100) if total_2018 > 0 else 0
+        pct_2023 = (v2023 / total_2023 * 100) if total_2023 > 0 else 0
+
+        rows.append({
+            "Market": c, 
+            "2018 Arrivals": f"{v2018:,.0f}", 
+            "2018 Share": f"{pct_2018:.1f}%",
+            "2023 Arrivals": f"{v2023:,.0f}",
+            "2023 Share": f"{pct_2023:.1f}%",
+            "Change": f"{change:+,.0f}", 
+            "% Change": f"{pct:+.1f}%"
+        })
+    
+    df = pd.DataFrame(rows)
+    st.dataframe(df, use_container_width=True, hide_index=True)
+    
+    st.markdown("""
+    <div class="issue-info">
+        <strong>📌 Reading the table:</strong> The <strong>Share</strong> columns show the percentage of total stay-over arrivals that each market represented in that year. This shows how the market mix has shifted. For example, if the U.K.'s share dropped, but its absolute number grew, it means the other markets grew faster.
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# VIEW: CRUISE VS. STAY-OVER
+# ============================================================================
+def render_cruise():
+    st.markdown("""
+    <div class="main-header">🛳️ Cruise vs. Stay-Over</div>
+    <div class="main-subheader">The two visitor streams compared</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("cruise")
+
+    years = sorted(BSS_STAY_OVER.keys())
+    stay_vals = [BSS_STAY_OVER[y] for y in years]
+    cruise_vals = [BSS_CRUISE[y] for y in years]
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=years, y=stay_vals, name="Stay-Over Arrivals", marker_color="#10B981", hovertemplate="Year: %{x}<br>Stay-Over: %{y:,.0f}<extra></extra>"))
+    fig.add_trace(go.Bar(x=years, y=cruise_vals, name="Cruise Arrivals", marker_color="#F59E0B", hovertemplate="Year: %{x}<br>Cruise: %{y:,.0f}<extra></extra>"))
+    fig.update_layout(
+        barmode="group", height=420,
+        title="Stay-Over vs. Cruise Arrivals (2018–2024)",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        yaxis_title="Arrivals", yaxis_tickformat=",",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2024 cruise is Jan–Nov YTD.")
+
+    st.markdown("### 📊 The Numbers Side by Side")
+    rows = []
+    for y in years:
+        rows.append({
+            "Year": y,
+            "Stay-Over": f"{BSS_STAY_OVER[y]:,.0f}",
+            "Cruise": f"{BSS_CRUISE[y]:,.0f}",
+            "Total Visitors": f"{(BSS_STAY_OVER[y] + BSS_CRUISE[y]):,.0f}",
+        })
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    st.markdown("""
+    <div class="issue-warning">
+        <strong>⚠️ The 2020–2021 collapse:</strong> Both streams collapsed in 2020 and 2021 due to COVID-19. Cruise was essentially zero in 2021. Both recovered strongly by 2023. The two streams move together — but they are not interchangeable.
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# VIEW: AIRPORT TRAFFIC VS. VISITOR ARRIVALS
+# ============================================================================
+def render_divergence():
+    st.markdown("""
+    <div class="main-header">✈️ Airport Traffic vs. Visitor Arrivals</div>
+    <div class="main-subheader">The gap that tells the story</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("divergence")
+
+    years = sorted(GAIA_PASSENGERS.keys())
+    gaia_vals = [GAIA_PASSENGERS[y] for y in years]
+    bss_vals = [BSS_STAY_OVER[y] for y in years]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=years, y=gaia_vals, name="GAIA Total Passengers",
+        line=dict(color="#3B82F6", width=3), mode="lines+markers",
+        fill=None,
+        hovertemplate="Year: %{x}<br>GAIA Passengers: %{y:,.0f}<extra></extra>"
+    ))
+    fig.add_trace(go.Scatter(
+        x=years, y=bss_vals, name="BSS Stay-Over Arrivals",
+        line=dict(color="#10B981", width=3), mode="lines+markers",
+        fill="tonexty", fillcolor="rgba(245, 158, 11, 0.15)",
+        hovertemplate="Year: %{x}<br>Stay-Over: %{y:,.0f}<extra></extra>"
+    ))
+    fig.update_layout(
+        height=450,
+        title="Airport Traffic vs. Actual Tourists — The Divergence",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        yaxis_title="Number of People", yaxis_tickformat=",",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+        hovermode="x unified"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("""
+    <div style="text-align:center; margin:10px 0 20px 0;">
+        <span style="background:#FEF3C7; padding:6px 16px; border-radius:16px; font-size:0.85rem; font-weight:600; color:#92400E;">
+        🟡 Shaded Area = Non-Tourist Passengers (locals, business travellers, transit, crew)
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 📊 The Gap, Year by Year")
+    rows = []
+    for y in years:
+        gap = GAIA_PASSENGERS[y] - BSS_STAY_OVER[y]
+        pct = (BSS_STAY_OVER[y] / GAIA_PASSENGERS[y] * 100) if GAIA_PASSENGERS[y] > 0 else 0
+        rows.append({
+            "Year": y,
+            "GAIA Passengers": f"{GAIA_PASSENGERS[y]:,.0f}",
+            "BSS Stay-Over": f"{BSS_STAY_OVER[y]:,.0f}",
+            "Gap (Non-Tourists)": f"{gap:,.0f}",
+            "Stay-Over % of Airport Traffic": f"{pct:.1f}%"
+        })
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    st.markdown("""
+    <div class="issue-info">
+        <strong>📌 What this means:</strong> In every year shown, the GAIA total is significantly larger than the BSS stay-over total. The gap is not a flaw in either source — it is a reflection of what each source measures. GAIA counts everyone through the terminal. BSS counts only the overnight visitors. The difference is locals, business travellers, transit passengers, and crew.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="evidence-box">
+        <div class="evidence-label">Sources</div>
+        <div class="evidence-text">
+        <strong>Airport Traffic:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
+        <strong>Visitor Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable).<br><br>
+        <em>This dashboard does not claim that either number is wrong. It shows what each source measures, and how far apart they are.</em>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# VIEW: CONCLUSION
+# ============================================================================
+def render_conclusion():
+    st.markdown("""
+    <div class="main-header">📖 Conclusion</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("conclusion")
+
+    st.markdown("""
+    <div class="conclusion-section">
+        <h2>The Numbers Tell a Story</h2>
+        <p style="font-size:1.05rem; color:#DBEAFE;">
+        The GAIA total passenger count is not the same as the BSS stay-over arrival count. 
+        They never have been. And they never will be.
+        </p>
+        <p style="color:#F1F5F9;">
+        The airport counts everyone through the terminal — locals, business travellers, transit passengers, crew, and tourists. 
+        The BSS counts only the stay-over visitors — the people who flew in and stayed overnight.
+        </p>
+        <p style="color:#F1F5F9;">
+        In 2024, over <strong>2.37 million</strong> people passed through GAIA. But only <strong>617,000</strong> were stay-over visitors. 
+        The gap is more than the entire population of Barbados.
+        </p>
+        <p style="color:#FFC726; font-weight:700; font-size:1.15rem; margin-top:16px; line-height:1.5;">
+        This is not a criticism of either source.<br>
+        It is simply what happens when you measure two different things.<br>
+        The airport measures traffic. The BSS measures tourism.<br>
+        Both are true. They are just not the same.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="evidence-box">
+        <div class="evidence-label">Data Sources</div>
+        <div class="evidence-text">
+        <strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
+        <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022 and 2024 revision notes).<br>
+        <strong>2019:</strong> BSS figures are Jan–Sept YTD only. October–December 2019 bulletins were not available.<br>
+        <strong>2024:</strong> BSS figures are revised per the BSS December 2024 revision note. Full breakdowns are pending release.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="background:#F8F5F0; padding:20px 24px; border-radius:10px; border:2px solid #00267F; margin:20px 0;">
+        <h4 style="color:#00267F; margin-bottom:8px;">📖 About This Dashboard</h4>
+        <p style="color:#1E293B; margin-bottom:8px;"><strong>Author &amp; Compiler:</strong> Matthew A. A. Blackman</p>
+        <p style="color:#1E293B; margin-bottom:8px;"><strong>Data Sources:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website); Barbados Statistical Service, Visitor Arrivals Statistics.</p>
+        <p style="color:#1E293B; margin-bottom:8px;"><strong>Proverbs:</strong> "De Mortar-Pestle" by G. Addinton Forde (1987). All page numbers verified against source.</p>
+        <p style="color:#1E293B; margin-bottom:0;"><strong>Dedication:</strong> To the people of Barbados — who deserve to see the numbers clearly, and understand what they measure.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# DOWNLOAD FUNCTIONS
+# ============================================================================
+def generate_csv():
+    years = sorted(GAIA_PASSENGERS.keys())
+    rows = []
+    for y in years:
+        rows.append({
+            "Year": y,
+            "GAIA_Total_Passengers": GAIA_PASSENGERS[y],
+            "BSS_StayOver_Arrivals": BSS_STAY_OVER[y],
+            "BSS_Cruise_Arrivals": BSS_CRUISE[y],
+            "Gap_NonTourists": GAIA_PASSENGERS[y] - BSS_STAY_OVER[y],
+        })
+    return pd.DataFrame(rows).to_csv(index=False)
+
+def generate_html_summary():
+    years = sorted(GAIA_PASSENGERS.keys())
+    rows_main = ""
+    for y in years:
+        gap = GAIA_PASSENGERS[y] - BSS_STAY_OVER[y]
+        rows_main += f"""
+        <tr>
+            <td>{y}</td>
+            <td>{GAIA_PASSENGERS[y]:,.0f}</td>
+            <td>{BSS_STAY_OVER[y]:,.0f}</td>
+            <td>{BSS_CRUISE[y]:,.0f}</td>
+            <td>{gap:,.0f}</td>
+        </tr>
+        """
+
+    # Country breakdown table with % of Total
+    country_years = [2018, 2022, 2023]
+    countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe", "Other Caribbean",
+                 "Latin/Central America", "Africa", "Asia", "Oceania", "Other"]
+    
+    country_header = "<tr><th>Country</th>"
+    for y in country_years:
+        country_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
+    country_header += "</tr>"
+
+    country_body = ""
+    for c in countries:
+        country_body += f"<tr><td>{c}</td>"
+        for y in country_years:
+            val = BSS_BY_COUNTRY.get(y, {}).get(c, 0)
+            total = BSS_STAY_OVER.get(y, 1) # Avoid div by zero
+            pct = (val / total * 100) if total > 0 else 0
+            country_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
+        country_body += "</tr>"
+
+    # Purpose breakdown table with % of Total
+    purpose_years = [2018, 2022, 2023]
+    purposes = ["Recreation", "Holiday", "Visiting Friends", "Business", "Study",
+                "Health Care", "Honeymoon", "Sports", "Intransit", "Other"]
+    
+    purpose_header = "<tr><th>Purpose</th>"
+    for y in purpose_years:
+        purpose_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
+    purpose_header += "</tr>"
+
+    purpose_body = ""
+    for p in purposes:
+        purpose_body += f"<tr><td>{p}</td>"
+        for y in purpose_years:
+            val = BSS_PURPOSE.get(y, {}).get(p, 0)
+            total = BSS_STAY_OVER.get(y, 1)
+            pct = (val / total * 100) if total > 0 else 0
+            purpose_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
+        purpose_body += "</tr>"
+
+    # Length of stay table with % of Total
+    length_years = [2018, 2022, 2023]
+    lengths = ["1 Day", "2-3 Days", "4-7 Days", "8-14 Days", "15-21 Days", "22-28 Days", "29-182 Days"]
+    
+    length_header = "<tr><th>Category</th>"
+    for y in length_years:
+        length_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
+    length_header += "</tr>"
+
+    length_body = ""
+    for l in lengths:
+        length_body += f"<tr><td>{l}</td>"
+        for y in length_years:
+            val = BSS_LENGTH.get(y, {}).get(l, 0)
+            total = BSS_STAY_OVER.get(y, 1)
+            pct = (val / total * 100) if total > 0 else 0
+            length_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
+        length_body += "</tr>"
+    
+    length_body += "<tr style='font-weight:bold;'><td>Average (days)</td>"
+    for y in length_years:
+        avg = BSS_LENGTH.get(y, {}).get("Avg", 0)
+        length_body += f"<td>{avg:.1f}</td><td>-</td>"
+    length_body += "</tr>"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"><title>Barbados Tourism Arrivals Summary</title>
+    <style>
+        body {{ font-family: Georgia, serif; background: #F5F0E8; color: #0F172A; line-height: 1.6; }}
+        .container {{ max-width: 1000px; margin: 0 auto; padding: 40px 30px; background: #FFFCF7; }}
+        h1 {{ color: #00267F; text-align: center; }}
+        h2 {{ color: #00267F; border-bottom: 2px solid #FFC726; padding-bottom: 4px; margin-top: 30px; }}
+        table {{ width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.82rem; }}
+        th {{ background: #00267F; color: white; padding: 8px 10px; text-align: left; }}
+        td {{ padding: 6px 10px; border-bottom: 1px solid #E0D6C8; }}
+        tr:nth-child(even) {{ background: #F8F5F0; }}
+        .proverb {{ background: #00267F; color: white; padding: 16px 20px; border-radius: 10px; border-left: 5px solid #FFC726; margin: 16px 0; }}
+        .proverb-text {{ font-size: 1.1rem; font-style: italic; color: #FFC726; font-weight: 600; }}
+        .proverb-meaning {{ color: #DBEAFE; font-size: 0.85rem; }}
+        .proverb-source {{ color: #BFDBFE; font-size: 0.7rem; }}
+        .footer {{ margin-top: 30px; padding-top: 20px; border-top: 3px solid #00267F; text-align: center; font-size: 0.8rem; color: #475569; }}
+        .note {{ background: #FEF3C7; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; }}
+    </style></head>
+    <body><div class="container">
+        <h1>✈️ Barbados Tourism Arrivals</h1>
+        <p style="text-align:center; font-style:italic; color:#475569;">Airport Traffic vs. Visitor Arrivals · 2018–2024</p>
+        <div class="proverb">
+            <div class="proverb-text">"Duh is more in de mortar dan de pestle."</div>
+            <div class="proverb-meaning">— There is more to the issue than appears on the surface.</div>
+            <div class="proverb-source">Source: "De Mortar-Pestle" by G. Addinton Forde (1987), p. 16</div>
+        </div>
+
+        <h2>1. GAIA vs. BSS — The Main Numbers</h2>
+        <table>
+            <thead><tr><th>Year</th><th>GAIA Passengers</th><th>BSS Stay-Over</th><th>BSS Cruise</th><th>Gap (Non-Tourists)</th></tr></thead>
+            <tbody>{rows_main}</tbody>
+        </table>
+
+        <div class="note">
+            <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023.
+        </div>
+
+        <h2>2. Stay-Over Arrivals by Country of Residence</h2>
+        <table>
+            <thead>{country_header}</thead>
+            <tbody>{country_body}</tbody>
+        </table>
+
+        <h2>3. Stay-Over Arrivals by Purpose of Visit</h2>
+        <table>
+            <thead>{purpose_header}</thead>
+            <tbody>{purpose_body}</tbody>
+        </table>
+
+        <h2>4. Stay-Over Arrivals by Length of Stay</h2>
+        <table>
+            <thead>{length_header}</thead>
+            <tbody>{length_body}</tbody>
+        </table>
+
+        <h2>5. Sources</h2>
+        <p><strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.</p>
+        <p><strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable).</p>
+        <p><strong>2019:</strong> BSS figures are Jan–Sept YTD only.</p>
+        <p><strong>2024:</strong> BSS figures are revised per the BSS December 2024 revision note. Full breakdowns pending BSS release.</p>
+
+        <div class="footer">
+            <p><strong>Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals</strong></p>
+            <p>Author &amp; Compiler: Matthew A. A. Blackman</p>
+            <p>Proverbs from "De Mortar-Pestle" by G. Addinton Forde (1987)</p>
+            <p style="font-size:0.7rem; color:#64748B; font-style:italic;">
+                This summary does not claim that either source is wrong. It shows what each source measures, and how far apart they are.
+            </p>
+        </div>
+    </div></body></html>
+    """
+    return html
+
+def render_download():
+    st.markdown("---")
+    st.markdown("### 📥 Download")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("📄 Download Summary (HTML)", use_container_width=True):
+            html = generate_html_summary()
+            b64 = base64.b64encode(html.encode()).decode()
+            href = f'<a href="data:text/html;base64,{b64}" download="barbados_tourism_arrivals_summary.html" style="display:block; background:#059669; color:#FFFFFF; text-align:center; padding:10px; border-radius:6px; text-decoration:none; font-weight:600;">✅ Click to Download Summary</a>'
+            st.markdown(href, unsafe_allow_html=True)
+            st.success("Summary ready! Click the green button above to download.")
+    with col2:
+        if st.button("📊 Download Data (CSV)", use_container_width=True):
+            csv = generate_csv()
+            b64 = base64.b64encode(csv.encode()).decode()
+            href = f'<a href="data:file/csv;base64,{b64}" download="barbados_tourism_arrivals_data.csv" style="display:block; background:#059669; color:#FFFFFF; text-align:center; padding:10px; border-radius:6px; text-decoration:none; font-weight:600;">✅ Click to Download CSV</a>'
+            st.markdown(href, unsafe_allow_html=True)
+            st.success("Data ready! Click the green button above to download.")
+
+# ============================================================================
+# SIDEBAR
+# ============================================================================
+with st.sidebar:
+    st.markdown("## ✈️ Barbados Tourism Arrivals")
+    st.markdown("### Navigation")
+    views = [
+        "📊 Overview",
+        "🏝️ The Two Visitor Streams",
+        "📅 Year-by-Year Explorer",
+        "🌍 Country Breakdown",
+        "🛳️ Cruise vs. Stay-Over",
+        "✈️ Airport Traffic vs. Visitor Arrivals",
+        "📖 Conclusion",
+    ]
+    view = st.selectbox("Select View", views, index=0)
+    st.markdown("---")
+    render_download()
+    st.markdown("---")
+    st.markdown("""
+    <div style="background:#F8F5F0; padding:12px 14px; border-radius:8px; border:1px solid #00267F;">
+        <div style="font-size:0.75rem; color:#00267F; font-weight:700;">📖 About</div>
+        <div style="font-size:0.75rem; color:#1E293B; margin-top:4px;">
+            Author &amp; Compiler: Matthew A. A. Blackman<br>
+            Sources: GAIA Inc. Passenger &amp; Cargo Statistics; BSS Visitor Arrivals Statistics<br>
+            Proverbs: "De Mortar-Pestle" by G. Addinton Forde (1987)
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# MAIN CONTENT ROUTING
+# ============================================================================
+if view == "📊 Overview":
+    render_overview()
+elif view == "🏝️ The Two Visitor Streams":
+    render_streams()
+elif view == "📅 Year-by-Year Explorer":
+    render_year_explorer()
+elif view == "🌍 Country Breakdown":
+    render_country()
+elif view == "🛳️ Cruise vs. Stay-Over":
+    render_cruise()
+elif view == "✈️ Airport Traffic vs. Visitor Arrivals":
+    render_divergence()
+elif view == "📖 Conclusion":
+    render_conclusion()
+
+# ============================================================================
+# FOOTER
+# ============================================================================
+st.markdown("---")
+st.caption(f"""
+**Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals**
+**Airport Traffic Source:** GAIA Inc. Passenger & Cargo Statistics (website). Operational traffic reports, not audited financial statements.
+**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022 and 2024 revision notes). 2019 BSS figures are Jan–Sept YTD only.
+**Proverbs:** "De Mortar-Pestle" by G. Addinton Forde (1987). Page numbers verified against source.
+**Author & Compiler:** Matthew A. A. Blackman
+**Generated:** {datetime.now().strftime('%B %d, %Y %I:%M %p')}
+""")
