@@ -13,6 +13,9 @@
 #   Visitor Arrivals:
 #     Barbados Statistical Service (BSS), Visitor Arrivals Statistics
 #     (revised where applicable — see 2022 and 2024 revision notes)
+#   World Cup / Kensington Oval Loan:
+#     Afreximbank Press Release (April 19, 2024)
+#     Barbados Today (November 1, 2023)
 #
 # FRAMING:
 #   This dashboard does not claim that either number is wrong.
@@ -23,7 +26,7 @@
 #   by G. Addinton Forde (1987). Page numbers verified against source.
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 2.0
+# VERSION: 2.5
 # DATE: July 2026
 # ============================================================================
 
@@ -34,7 +37,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime
 import base64
-import io
 
 # ============================================================================
 # PAGE CONFIGURATION
@@ -257,14 +259,49 @@ GAIA_PASSENGERS = {
     2022: 1551170, 2023: 2103639, 2024: 2372645,
 }
 
+# BSS Stay-Over Arrivals
+# 2024 = Jan-Nov (617,228 from VA202411 Table 6) + Revised Dec (79,303 from
+#        BSS December 2024 revision note; originally published as 87,112)
+#        = 696,531
+# 2023 = full year 636,540
+# => 2024 is a +9.4% INCREASE over 2023.
 BSS_STAY_OVER = {
     2018: 678538, 2019: 520881, 2020: 195102, 2021: 144833,
-    2022: 539746, 2023: 636540, 2024: 617314,
+    2022: 539746, 2023: 636540, 2024: 696531,
 }
 
+# BSS Cruise Arrivals
+# 2024 figure is Jan-Nov YTD only (VA202411 Table 6). The December 2024
+# cruise bulletin was not available at time of compilation.
 BSS_CRUISE = {
     2018: 836155, 2019: 557171, 2020: 343791, 2021: 97450,
-    2022: 357853, 2023: 656904, 2024: 649125,
+    2022: 357853, 2023: 656904, 2024: 649125,  # 2024 = Jan–Nov YTD
+}
+
+# ============================================================================
+# WORLD CUP / KENSINGTON OVAL CONTEXT (VERIFIED)
+# ============================================================================
+# Loan: USD 25 million (BDS$50 million) term loan facility from Afreximbank
+# to Kensington Oval Management Inc. (KOMI), guaranteed by the Government
+# of Barbados. Signed November 1, 2023 at ACTIF23, Georgetown, Guyana.
+# Purpose: Rehabilitation and upgrade of Kensington Oval ahead of the
+# 2024 ICC Men's T20 World Cup (June 4–30, 2024).
+# ============================================================================
+WORLD_CUP_CONTEXT = {
+    "loan_usd": 25_000_000,
+    "loan_bbd": 50_000_000,
+    "lender": "Afreximbank",
+    "borrower": "Kensington Oval Management Inc. (KOMI)",
+    "guarantor": "Government of Barbados",
+    "signed": "November 1, 2023",
+    "purpose": "Rehabilitation and upgrade of Kensington Oval ahead of the 2024 ICC Men's T20 World Cup",
+    "event_dates": "June 4–30, 2024",
+}
+
+WORLD_CUP_BASELINE = {
+    2018: {"arrivals": BSS_STAY_OVER[2018], "context": "Last normal pre-COVID year; no World Cup; no stadium loan"},
+    2023: {"arrivals": BSS_STAY_OVER[2023], "context": "Year before the World Cup"},
+    2024: {"arrivals": BSS_STAY_OVER[2024], "context": "World Cup year; USD 25M Afreximbank loan guaranteed by Government"},
 }
 
 BSS_BY_COUNTRY = {
@@ -374,7 +411,7 @@ def render_overview():
         <div class="metric-card" style="border-left:4px solid #10B981;">
             <div class="metric-label">BSS Stay-Over Arrivals</div>
             <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[2024])}</div>
-            <div class="metric-context">{get_badge('revised')}</div>
+            <div class="metric-context">{get_badge('revised')} Full Year</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
@@ -382,7 +419,7 @@ def render_overview():
         <div class="metric-card" style="border-left:4px solid #F59E0B;">
             <div class="metric-label">BSS Cruise Arrivals</div>
             <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[2024])}</div>
-            <div class="metric-context">{get_badge('bss')} Jan-Nov</div>
+            <div class="metric-context">{get_badge('bss')} Jan-Nov YTD</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -393,10 +430,17 @@ def render_overview():
         That is more than the entire population of Barbados. The gap is the story.
     </div>
     """, unsafe_allow_html=True)
-    
+
+    st.markdown("""
+    <div class="issue-good" style="margin-top:10px;">
+        <strong>✅ 2024 Was a Year of Growth:</strong> Stay-over arrivals rose to <strong>696,531</strong>, a <strong>+9.4% increase</strong> over 2023 (636,540).
+        This annual total incorporates the BSS revised December 2024 figure (79,303, originally 87,112).
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("""
     <div class="issue-unknown" style="margin-top:10px;">
-        <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS.
+        <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The annual 2024 stay-over total shown here (696,531) uses the revised December figure plus the Jan–Nov YTD total (617,228). The full-year 2024 sub-category breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS.
     </div>
     """, unsafe_allow_html=True)
 
@@ -432,7 +476,7 @@ def render_overview():
     fig.update_yaxes(title_text="Number of People", tickformat=",")
     st.plotly_chart(fig, use_container_width=True)
 
-    st.caption("Note: 2019 BSS figures are Jan–Sept YTD only. 2022 and 2024 BSS figures are revised. See the Year-by-Year Explorer for full details.")
+    st.caption("Note: 2019 BSS figures are Jan–Sept YTD only. 2022 and 2024 BSS figures are revised. 2024 cruise is Jan–Nov YTD. See the Year-by-Year Explorer for full details.")
 
 # ============================================================================
 # VIEW: TWO VISITOR STREAMS
@@ -458,7 +502,7 @@ def render_streams():
         <div class="metric-card" style="border-left:4px solid #10B981;">
             <div class="metric-label">Stay-Over Arrivals (2024)</div>
             <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[2024])}</div>
-            <div class="metric-context">Actual overnight visitors</div>
+            <div class="metric-context">Actual overnight visitors (full year, revised)</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -466,7 +510,7 @@ def render_streams():
         <div class="metric-card" style="border-left:4px solid #F59E0B;">
             <div class="metric-label">Cruise Arrivals (2024, Jan–Nov)</div>
             <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[2024])}</div>
-            <div class="metric-context">Cruise passengers</div>
+            <div class="metric-context">Cruise passengers (YTD)</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -488,10 +532,10 @@ def render_streams():
         {"Year": "2024", "Type": "Landed", "Passengers": 156400},
     ]
     df_cruise = pd.DataFrame(cruise_data)
-    
+
     fig = px.bar(
         df_cruise, x="Year", y="Passengers", color="Type", barmode="group",
-        title="Cruise Arrivals: Intransit vs. Landed (2023 vs 2024)",
+        title="Cruise Arrivals: Intransit vs. Landed (2023 vs 2024, Jan–Nov)",
         color_discrete_map={"Intransit": "#3B82F6", "Landed": "#F59E0B"}
     )
     fig.update_layout(
@@ -545,14 +589,19 @@ def render_year_explorer():
         <div class="metric-card" style="border-left:4px solid #F59E0B;">
             <div class="metric-label">BSS Cruise Arrivals</div>
             <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[year])}</div>
-            <div class="metric-context">{get_badge('bss')} {'(Jan-Nov)' if year == 2024 else ''}</div>
+            <div class="metric-context">{get_badge('bss')} {'(Jan-Nov YTD)' if year == 2024 else ''}</div>
         </div>
         """, unsafe_allow_html=True)
 
     if year == 2024:
-        st.markdown("""
-        <div class="issue-unknown" style="margin-top:20px;">
-            <strong>⏳ BSS Detailed Breakdowns Pending:</strong> The Barbados Statistical Service has revised the December 2024 arrival numbers (downward from 87,112 to 79,303) due to IT issues at the Immigration Department. As a result, the full-year breakdowns for Country of Residence, Purpose of Visit, and Length of Stay for 2024 have not yet been published. We have used the revised total (617,314) for the main figures, but the detailed charts for 2024 are unavailable until the BSS releases the final tables.
+        st.markdown(f"""
+        <div class="issue-good" style="margin-top:20px;">
+            <strong>✅ 2024 Stay-Over Total is Finalized at {format_number(BSS_STAY_OVER[2024])}:</strong>
+            Jan–Nov YTD (617,228) + revised December (79,303) = 696,531.
+            This represents a <strong>+9.4% increase</strong> over 2023 (636,540).
+        </div>
+        <div class="issue-unknown" style="margin-top:10px;">
+            <strong>⏳ Sub-Category Breakdowns Pending:</strong> The Barbados Statistical Service has not yet published the full-year 2024 tables for Country of Residence, Purpose of Visit, and Length of Stay. Only the monthly bulletins (Jan–Nov) and the revised annual total are available. The detailed charts for 2024 will be added once the BSS releases the final tables.
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -561,17 +610,17 @@ def render_year_explorer():
         if country_data:
             df_country = pd.DataFrame(list(country_data.items()), columns=["Country", "Arrivals"])
             df_country = df_country.sort_values("Arrivals", ascending=True)
-            
+
             fig = px.bar(df_country, x="Arrivals", y="Country", orientation="h",
                          color="Arrivals", color_continuous_scale="Blues",
                          title=f"Stay-Over Arrivals by Country ({year})",
                          hover_data={"Arrivals": ":,.0f"},
                          text_auto='.0f')
-            
+
             fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                               showlegend=False, coloraxis_showscale=False,
                               xaxis_tickformat=",")
-            
+
             fig.update_traces(textfont_size=10, textangle=0, textposition="outside", cliponaxis=False)
             st.plotly_chart(fig, use_container_width=True)
             st.caption(f"Source: Barbados Statistical Service, Visitor Arrivals Statistics ({year})")
@@ -595,19 +644,19 @@ def render_year_explorer():
         if length_data:
             avg = length_data.pop("Avg", None)
             df_length = pd.DataFrame(list(length_data.items()), columns=["Category", "Arrivals"])
-            
-            fig = px.bar(df_length, x="Category", y="Arrivals", 
+
+            fig = px.bar(df_length, x="Category", y="Arrivals",
                          title=f"Stay-Over Arrivals by Length of Stay ({year})",
                          color_discrete_sequence=["#00267F"],
                          hover_data={"Arrivals": ":,.0f"},
                          text_auto='.0f')
-            
+
             fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                               showlegend=False, yaxis_tickformat=",")
-            
+
             fig.update_traces(textfont_size=10, textangle=0, textposition="outside", cliponaxis=False)
             st.plotly_chart(fig, use_container_width=True)
-            
+
             if avg:
                 st.markdown(f"""
                 <div class="metric-card" style="border-left:4px solid #8B5CF6; max-width:280px;">
@@ -654,7 +703,7 @@ def render_country():
         hovermode="x unified"
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Source: Barbados Statistical Service, Visitor Arrivals Statistics. 2019, 2020, and 2021 omitted because full-year breakdowns are not available or are pandemic-affected. 2024 is pending BSS release.")
+    st.caption("Source: Barbados Statistical Service, Visitor Arrivals Statistics. 2019, 2020, and 2021 omitted because full-year breakdowns are not available or are pandemic-affected. 2024 breakdowns are pending BSS release.")
 
     st.markdown("### 📊 2023 vs. 2018 — Market Shift")
     rows = []
@@ -663,25 +712,25 @@ def render_country():
         v2023 = BSS_BY_COUNTRY[2023].get(c, 0)
         change = v2023 - v2018
         pct = (change / v2018 * 100) if v2018 > 0 else 0
-        
+
         total_2018 = sum(BSS_BY_COUNTRY[2018].values())
         total_2023 = sum(BSS_BY_COUNTRY[2023].values())
         pct_2018 = (v2018 / total_2018 * 100) if total_2018 > 0 else 0
         pct_2023 = (v2023 / total_2023 * 100) if total_2023 > 0 else 0
 
         rows.append({
-            "Market": c, 
-            "2018 Arrivals": f"{v2018:,.0f}", 
+            "Market": c,
+            "2018 Arrivals": f"{v2018:,.0f}",
             "2018 Share": f"{pct_2018:.1f}%",
             "2023 Arrivals": f"{v2023:,.0f}",
             "2023 Share": f"{pct_2023:.1f}%",
-            "Change": f"{change:+,.0f}", 
+            "Change": f"{change:+,.0f}",
             "% Change": f"{pct:+.1f}%"
         })
-    
+
     df = pd.DataFrame(rows)
     st.dataframe(df, use_container_width=True, hide_index=True)
-    
+
     st.markdown("""
     <div class="issue-info">
         <strong>📌 Reading the table:</strong> The <strong>Share</strong> columns show the percentage of total stay-over arrivals that each market represented in that year. This shows how the market mix has shifted. For example, if the U.K.'s share dropped, but its absolute number grew, it means the other markets grew faster.
@@ -715,7 +764,10 @@ def render_cruise():
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2024 cruise is Jan–Nov YTD.")
+    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. "
+               "2024 cruise is Jan–Nov YTD — December 2024 cruise data was not "
+               "available at time of compilation, so the 2024 cruise total is "
+               "not directly comparable to prior full years.")
 
     st.markdown("### 📊 The Numbers Side by Side")
     rows = []
@@ -813,6 +865,129 @@ def render_divergence():
     """, unsafe_allow_html=True)
 
 # ============================================================================
+# VIEW: THE WORLD CUP CONTEXT
+# ============================================================================
+def render_worldcup():
+    st.markdown("""
+    <div class="main-header">🏏 The World Cup Context</div>
+    <div class="main-subheader">A major event, a USD 25M loan, and the arrival numbers</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    render_proverb("year")
+
+    st.markdown(f"""
+    <div class="issue-info">
+        <strong>📌 The context:</strong> In November 2023, the African Export-Import Bank
+        (Afreximbank) extended a <strong>USD 25 million (BDS$50 million)</strong> term loan
+        facility to <strong>Kensington Oval Management Inc. (KOMI)</strong>, backed by a
+        <strong>guarantee from the Government of Barbados</strong>. The facility was used to
+        rehabilitate and upgrade Kensington Oval ahead of the 2024 ICC Men's T20 World Cup
+        (June 4–30, 2024). Barbados hosted the Final.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="evidence-box">
+        <div class="evidence-label">Loan Terms — Verified</div>
+        <div class="evidence-text">
+        <strong>Lender:</strong> African Export-Import Bank (Afreximbank)<br>
+        <strong>Borrower:</strong> Kensington Oval Management Inc. (KOMI)<br>
+        <strong>Guarantor:</strong> Government of Barbados<br>
+        <strong>Amount:</strong> USD 25,000,000 (BDS$50,000,000)<br>
+        <strong>Signed:</strong> November 1, 2023, at ACTIF23, Georgetown, Guyana<br>
+        <strong>Purpose:</strong> Rehabilitation and upgrade — Garfield Sobers Players' Pavilion,
+        A/V and electrical systems, temporary stands — ahead of the 2024 ICC T20 World Cup<br>
+        <strong>Interest:</strong> Concessionary rates
+        </div>
+        <div class="evidence-source">
+        Sources: Afreximbank press release, 19 April 2024; Barbados Today, 1 November 2023.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 📊 What Did the Arrival Numbers Actually Do?")
+
+    rows = []
+    baseline_2018 = BSS_STAY_OVER[2018]
+    for y in [2018, 2023, 2024]:
+        arr = BSS_STAY_OVER[y]
+        change = arr - baseline_2018
+        pct = (change / baseline_2018 * 100) if baseline_2018 > 0 else 0
+        if y == 2018:
+            change_str = "—"
+            pct_str = "—"
+        else:
+            change_str = f"{change:+,.0f}"
+            pct_str = f"{pct:+.1f}%"
+        rows.append({
+            "Year": y,
+            "Stay-Over Arrivals": f"{arr:,.0f}",
+            "Change vs 2018": change_str,
+            "% Change vs 2018": pct_str,
+            "Context": WORLD_CUP_BASELINE[y]["context"],
+        })
+    df = pd.DataFrame(rows)
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+    delta_vs_2023 = BSS_STAY_OVER[2024] - BSS_STAY_OVER[2023]
+    pct_vs_2023 = delta_vs_2023 / BSS_STAY_OVER[2023] * 100
+    delta_vs_2018 = BSS_STAY_OVER[2024] - BSS_STAY_OVER[2018]
+    pct_vs_2018 = delta_vs_2018 / BSS_STAY_OVER[2018] * 100
+
+    st.markdown(f"""
+    <div class="issue-warning" style="margin-top:14px;">
+        <strong>⚠️ Two baselines, two sets of numbers:</strong><br>
+        Against <strong>2023</strong> (the year before the World Cup), 2024 rose by
+        <strong>{delta_vs_2023:+,.0f} visitors ({pct_vs_2023:+.1f}%)</strong>.<br>
+        Against <strong>2018</strong> (the last normal pre-COVID year — no World Cup, no loan),
+        2024 rose by <strong>{delta_vs_2018:+,.0f} visitors ({pct_vs_2018:+.1f}%)</strong>.<br>
+        Both are accurate depending on the baseline chosen.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 🧭 What This Data Cannot Tell You")
+
+    st.markdown("""
+    <div class="issue-unknown">
+        <strong>1. Arrivals are not impact.</strong> A stay-over visitor's spend varies enormously
+        by length of stay, purpose, and source market. This dashboard counts heads, not dollars.
+        A World Cup visitor may spend more per day than a winter sun-seeker — or less.
+    </div>
+    <div class="issue-unknown">
+        <strong>2. Causation is not established.</strong> Airlift, source-market economics, cruise
+        deployment, hotel capacity, and global travel demand all move arrivals. No single cause
+        — not the World Cup, not the loan — can be isolated from this data.
+    </div>
+    <div class="issue-unknown">
+        <strong>3. Some benefits don't show up in arrivals at all.</strong> Global broadcast
+        exposure, future bookings, cruise calls, and the legacy use of a renovated venue
+        are not captured by a stay-over headcount.
+    </div>
+    <div class="issue-unknown">
+        <strong>4. The loan is a liability, not a cost.</strong> The USD 25M is a term loan
+        (concessionary rate), not a grant. The Government of Barbados guaranteed it. Whether
+        the guarantee is ever called, and whether the venue's future revenue services the loan,
+        are questions for the fiscal accounts — not the arrivals statistics.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="evidence-box">
+        <div class="evidence-label">Sources</div>
+        <div class="evidence-text">
+        <strong>Loan:</strong> Afreximbank press release, 19 April 2024 — "Afreximbank Supports
+        Rehabilitation of Sporting Facility in Barbados Ahead of the 2024 Cricket World Cup."<br>
+        <strong>Loan (signing):</strong> Barbados Today, 1 November 2023 — "Loan signed for
+        Kensington Oval upgrade."<br>
+        <strong>Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics
+        (2018, 2023, 2024; 2024 revised per BSS revision note).<br><br>
+        <em>This section presents factual context and arrival figures. It does not assess the return on investment or the success of the event.</em>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
 # VIEW: CONCLUSION
 # ============================================================================
 def render_conclusion():
@@ -823,7 +998,6 @@ def render_conclusion():
 
     render_proverb("conclusion")
 
-    # Part 1: The main conclusion text
     st.markdown("""
     <div class="conclusion-section">
         <h2>The Numbers Tell a Story</h2>
@@ -836,27 +1010,27 @@ def render_conclusion():
         The BSS counts only the stay-over visitors — the people who flew in and stayed overnight.
         </p>
         <p style="color:#F1F5F9;">
-        In 2024, over <strong>2.37 million</strong> people passed through GAIA. But only <strong>617,000</strong> were stay-over visitors. 
+        In 2024, over <strong>2.37 million</strong> people passed through GAIA. But only <strong>696,531</strong> were stay-over visitors. 
         The gap is more than the entire population of Barbados.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Part 2: The World Cup Box (Rendered separately to fix the HTML bug)
     st.markdown("""
     <div style="background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%); 
                 padding: 20px 25px; border-radius: 12px; border-left: 6px solid #FFC726; 
                 margin: 15px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h3 style="color: #FFC726; margin-top: 0; font-size: 1.3rem;">🏏 The 2024 World Cup Paradox</h3>
+        <h3 style="color: #FFC726; margin-top: 0; font-size: 1.3rem;">🏏 The 2024 World Cup Year</h3>
         <p style="color: #F1F5F9; font-size: 0.95rem; line-height: 1.6;">
-        In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. Yet, actual stay-over tourists fell by 3% compared to 2023 (from 636,540 to 617,314). 
+        In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. 
+        Stay-over tourism also grew: arrivals rose to <strong>696,531</strong>, a <strong>+9.4% increase</strong> over 2023 (636,540), once the revised December 2024 figure is included.
         <br><br>
-        The World Cup filled the planes and the cruise ships, but it did not fill the hotel beds for the year. Mega-events boost airport traffic; they do not automatically grow the stay-over tourism product.
+        In November 2023, Afreximbank extended a <strong>USD 25 million loan</strong> to Kensington Oval Management Inc. — guaranteed by the Government of Barbados — to prepare the venue. Against 2018, the last normal pre-COVID year, 2024's arrivals were <strong>+2.7% higher</strong>. 
+        See <em>The World Cup Context</em> for the specific arrival numbers across these baselines.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Part 3: The final punchline
     st.markdown("""
     <div class="conclusion-section" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
         <p style="color:#FFC726; font-weight:700; font-size:1.15rem; line-height:1.5; margin-bottom: 0;">
@@ -868,7 +1042,6 @@ def render_conclusion():
     </div>
     """, unsafe_allow_html=True)
 
-    # Sources box
     st.markdown("""
     <div class="evidence-box">
         <div class="evidence-label">Data Sources</div>
@@ -876,12 +1049,11 @@ def render_conclusion():
         <strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
         <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022 and 2024 revision notes).<br>
         <strong>2019:</strong> BSS figures are Jan–Sept YTD only. October–December 2019 bulletins were not available.<br>
-        <strong>2024:</strong> BSS figures are revised per the BSS December 2024 revision note. Full breakdowns are pending release.
+        <strong>2024:</strong> BSS stay-over annual total (696,531) uses Jan–Nov YTD (617,228) + revised December (79,303). Cruise 2024 is Jan–Nov YTD. Full sub-category breakdowns are pending release.
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # About box
     st.markdown("""
     <div style="background:#F8F5F0; padding:20px 24px; border-radius:10px; border:2px solid #00267F; margin:20px 0;">
         <h4 style="color:#00267F; margin-bottom:8px;">📖 About This Dashboard</h4>
@@ -995,7 +1167,9 @@ def generate_html_summary():
         .proverb-source {{ color: #BFDBFE; font-size: 0.7rem; }}
         .footer {{ margin-top: 30px; padding-top: 20px; border-top: 3px solid #00267F; text-align: center; font-size: 0.8rem; color: #475569; }}
         .note {{ background: #FEF3C7; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; }}
+        .growth {{ background: #ECFDF5; color: #064E3B; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #10B981; margin: 16px 0; font-size: 0.85rem; border: 1px solid #6EE7B7; }}
         .worldcup {{ background: #EFF6FF; color: #1E3A8A; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 16px 0; font-size: 0.85rem; border: 1px solid #93C5FD; }}
+        .dedication {{ margin-top: 20px; padding: 15px; background: #F8F5F0; border-radius: 8px; text-align: center; font-style: italic; color: #00267F; font-weight: bold; }}
     </style></head>
     <body><div class="container">
         <h1>✈️ Barbados Tourism Arrivals</h1>
@@ -1012,12 +1186,18 @@ def generate_html_summary():
             <tbody>{rows_main}</tbody>
         </table>
 
+        <div class="growth">
+            <strong>✅ 2024 Was a Year of Growth:</strong> Stay-over arrivals rose to <strong>696,531</strong>, a <strong>+9.4% increase</strong> over 2023 (636,540). The annual 2024 total incorporates the BSS revised December figure (79,303, originally 87,112) plus the Jan–Nov YTD total (617,228).
+        </div>
+
         <div class="note">
-            <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023.
+            <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 sub-category breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023. Note also that the 2024 cruise figure (649,125) is Jan–Nov YTD only — December 2024 cruise data was not available at time of compilation.
         </div>
 
         <div class="worldcup">
-            <strong>🏏 The 2024 World Cup Paradox:</strong> In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. Yet, actual stay-over tourists fell by 3% compared to 2023 (from 636,540 to 617,314). The World Cup filled the planes and the cruise ships, but it did not fill the hotel beds for the year. Mega-events boost airport traffic; they do not automatically grow the stay-over tourism product.
+            <strong>🏏 The 2024 World Cup Context:</strong> In June 2024, Barbados hosted the ICC Men's T20 World Cup Final. The airport saw a record 2.37 million passengers for the year. Stay-over tourism also grew: arrivals rose to <strong>696,531</strong>, a <strong>+9.4% increase</strong> over 2023 (636,540), once the revised December 2024 figure is included.
+            <br><br>
+            In November 2023, Afreximbank extended a <strong>USD 25 million loan</strong> (BDS$50 million) to Kensington Oval Management Inc. (KOMI), guaranteed by the Government of Barbados, to rehabilitate the venue ahead of the event. Signed 1 November 2023. Against 2018 — the last normal pre-COVID year, with no World Cup and no loan — 2024's arrivals were <strong>+2.7% higher</strong> (+17,993 visitors). Against 2023, they were <strong>+9.4% higher</strong>. Both are accurate depending on the baseline chosen.
         </div>
 
         <h2>2. Stay-Over Arrivals by Country of Residence</h2>
@@ -1041,8 +1221,9 @@ def generate_html_summary():
         <h2>5. Sources</h2>
         <p><strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.</p>
         <p><strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable).</p>
+        <p><strong>Kensington Oval Loan:</strong> Afreximbank press release, 19 April 2024; Barbados Today, 1 November 2023 — USD 25M (BDS$50M) term loan from Afreximbank to KOMI, guaranteed by the Government of Barbados.</p>
         <p><strong>2019:</strong> BSS figures are Jan–Sept YTD only.</p>
-        <p><strong>2024:</strong> BSS figures are revised per the BSS December 2024 revision note. Full breakdowns pending BSS release.</p>
+        <p><strong>2024:</strong> BSS stay-over annual total (696,531) = Jan–Nov YTD (617,228) + revised December (79,303). Cruise 2024 is Jan–Nov YTD. Full sub-category breakdowns pending BSS release.</p>
 
         <div class="footer">
             <p><strong>Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals</strong></p>
@@ -1051,6 +1232,9 @@ def generate_html_summary():
             <p style="font-size:0.7rem; color:#64748B; font-style:italic;">
                 This summary does not claim that either source is wrong. It shows what each source measures, and how far apart they are.
             </p>
+            <div class="dedication">
+                Dedication: To the people of Barbados — who deserve to see the numbers clearly, and understand what they measure.
+            </div>
         </div>
     </div></body></html>
     """
@@ -1088,6 +1272,7 @@ with st.sidebar:
         "🌍 Country Breakdown",
         "🛳️ Cruise vs. Stay-Over",
         "✈️ Airport Traffic vs. Visitor Arrivals",
+        "🏏 The World Cup Context",
         "📖 Conclusion",
     ]
     view = st.selectbox("Select View", views, index=0)
@@ -1120,6 +1305,8 @@ elif view == "🛳️ Cruise vs. Stay-Over":
     render_cruise()
 elif view == "✈️ Airport Traffic vs. Visitor Arrivals":
     render_divergence()
+elif view == "🏏 The World Cup Context":
+    render_worldcup()
 elif view == "📖 Conclusion":
     render_conclusion()
 
@@ -1130,7 +1317,7 @@ st.markdown("---")
 st.caption(f"""
 **Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals**
 **Airport Traffic Source:** GAIA Inc. Passenger & Cargo Statistics (website). Operational traffic reports, not audited financial statements.
-**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022 and 2024 revision notes). 2019 BSS figures are Jan–Sept YTD only.
+**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022 and 2024 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2024 stay-over total = Jan–Nov YTD + revised December; 2024 cruise = Jan–Nov YTD.
 **Proverbs:** "De Mortar-Pestle" by G. Addinton Forde (1987). Page numbers verified against source.
 **Author & Compiler:** Matthew A. A. Blackman
 **Generated:** {datetime.now().strftime('%B %d, %Y %I:%M %p')}
