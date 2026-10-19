@@ -9,24 +9,14 @@
 # SOURCES:
 #   Airport Traffic:
 #     GAIA Inc. Passenger & Cargo Statistics (website)
-#     NOT audited financial statements. Operational traffic reports.
 #   Visitor Arrivals:
 #     Barbados Statistical Service (BSS), Visitor Arrivals Statistics
-#     (revised where applicable — see 2022 and 2024 revision notes)
 #   World Cup / Kensington Oval Loan:
 #     Afreximbank Press Release (April 19, 2024)
 #     Barbados Today (November 1, 2023)
 #
-# FRAMING:
-#   This dashboard does not claim that either number is wrong.
-#   It shows what each source measures, and how far apart they are.
-#
-# PROVERBS:
-#   All from "De Mortar-Pestle: A Collection of Barbadian Proverbs"
-#   by G. Addinton Forde (1987). Page numbers verified against source.
-#
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 2.5
+# VERSION: 4.4 (HTML Summary includes Conversion Rate)
 # DATE: July 2026
 # ============================================================================
 
@@ -53,198 +43,31 @@ st.set_page_config(
 # ============================================================================
 st.markdown("""
 <style>
-.main-header {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 0.2rem;
-    color: #00267F;
-    text-align: center;
-    padding: 10px 0;
-}
-.main-subheader {
-    text-align: center;
-    font-size: 1.05rem;
-    color: #475569;
-    margin-top: -5px;
-    margin-bottom: 15px;
-    font-style: italic;
-}
-.year-header {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #00267F;
-    margin-top: 0.2rem;
-    margin-bottom: 0.3rem;
-}
-.proverb-card {
-    background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%);
-    color: #FFFFFF;
-    padding: 18px 22px;
-    border-radius: 12px;
-    margin: 10px 0;
-    border-left: 6px solid #FFC726;
-}
-.proverb-text {
-    font-size: 1.25rem;
-    font-style: italic;
-    color: #FFC726;
-    font-weight: 600;
-}
-.proverb-meaning {
-    color: #DBEAFE;
-    font-size: 0.85rem;
-    margin-top: 4px;
-}
-.proverb-source {
-    color: #BFDBFE;
-    font-size: 0.7rem;
-    margin-top: 2px;
-    opacity: 0.9;
-}
-.proverb-why {
-    color: #F1F5F9;
-    font-size: 0.82rem;
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 6px;
-    border-left: 3px solid #FFC726;
-}
-.metric-card {
-    background: #FFFFFF;
-    border: 1px solid #CBD5E1;
-    border-radius: 10px;
-    padding: 0.8rem;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-    height: 100%;
-}
-.metric-value {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #00267F;
-}
-.metric-label {
-    font-size: 0.7rem;
-    color: #475569;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.metric-context {
-    font-size: 0.72rem;
-    color: #64748B;
-    margin-top: 2px;
-}
-.issue-critical {
-    background: #FEF2F2;
-    color: #7F1D1D;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #DC2626;
-    margin: 6px 0;
-    font-size: 0.92rem;
-    border: 1px solid #FCA5A5;
-}
-.issue-critical strong { color: #7F1D1D; }
-.issue-warning {
-    background: #FFFBEB;
-    color: #78350F;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #F59E0B;
-    margin: 6px 0;
-    font-size: 0.92rem;
-    border: 1px solid #FCD34D;
-}
-.issue-warning strong { color: #78350F; }
-.issue-info {
-    background: #EFF6FF;
-    color: #1E3A8A;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #3B82F6;
-    margin: 6px 0;
-    font-size: 0.92rem;
-    border: 1px solid #93C5FD;
-}
-.issue-info strong { color: #1E3A8A; }
-.issue-good {
-    background: #ECFDF5;
-    color: #064E3B;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #10B981;
-    margin: 6px 0;
-    font-size: 0.92rem;
-    border: 1px solid #6EE7B7;
-}
-.issue-good strong { color: #064E3B; }
-.issue-unknown {
-    background: #F5F3FF;
-    color: #4C1D95;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #8B5CF6;
-    margin: 6px 0;
-    font-size: 0.92rem;
-    border: 1px solid #C4B5FD;
-}
-.issue-unknown strong { color: #4C1D95; }
-.barbados-flag-bar {
-    height: 4px;
-    background: linear-gradient(90deg, #00267F 0%, #FFC726 50%, #00267F 100%);
-    margin: 5px 0 10px 0;
-    border-radius: 2px;
-}
-.conclusion-section {
-    background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%);
-    color: #FFFFFF;
-    padding: 25px 30px;
-    border-radius: 12px;
-    margin: 20px 0;
-    border-left: 6px solid #FFC726;
-}
-.conclusion-section h2 {
-    color: #FFC726;
-    font-size: 1.6rem;
-    margin-top: 0;
-}
+.main-header { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.2rem; color: #00267F; text-align: center; padding: 10px 0; }
+.main-subheader { text-align: center; font-size: 1.05rem; color: #475569; margin-top: -5px; margin-bottom: 15px; font-style: italic; }
+.proverb-card { background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%); color: #FFFFFF; padding: 18px 22px; border-radius: 12px; margin: 10px 0; border-left: 6px solid #FFC726; }
+.proverb-text { font-size: 1.25rem; font-style: italic; color: #FFC726; font-weight: 600; }
+.proverb-meaning { color: #DBEAFE; font-size: 0.85rem; margin-top: 4px; }
+.proverb-source { color: #BFDBFE; font-size: 0.7rem; margin-top: 2px; opacity: 0.9; }
+.proverb-why { color: #F1F5F9; font-size: 0.82rem; margin-top: 8px; padding: 8px 12px; background: rgba(255,255,255,0.12); border-radius: 6px; border-left: 3px solid #FFC726; }
+.metric-card { background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 10px; padding: 0.8rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.06); height: 100%; }
+.metric-value { font-size: 1.6rem; font-weight: 700; color: #00267F; }
+.metric-label { font-size: 0.7rem; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-context { font-size: 0.72rem; color: #64748B; margin-top: 2px; }
+.issue-critical { background: #FEF2F2; color: #7F1D1D; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #DC2626; margin: 6px 0; font-size: 0.92rem; border: 1px solid #FCA5A5; }
+.issue-warning { background: #FFFBEB; color: #78350F; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 6px 0; font-size: 0.92rem; border: 1px solid #FCD34D; }
+.issue-info { background: #EFF6FF; color: #1E3A8A; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 6px 0; font-size: 0.92rem; border: 1px solid #93C5FD; }
+.issue-good { background: #ECFDF5; color: #064E3B; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #10B981; margin: 6px 0; font-size: 0.92rem; border: 1px solid #6EE7B7; }
+.issue-unknown { background: #F5F3FF; color: #4C1D95; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #8B5CF6; margin: 6px 0; font-size: 0.92rem; border: 1px solid #C4B5FD; }
+.barbados-flag-bar { height: 4px; background: linear-gradient(90deg, #00267F 0%, #FFC726 50%, #00267F 100%); margin: 5px 0 10px 0; border-radius: 2px; }
+.conclusion-section { background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%); color: #FFFFFF; padding: 25px 30px; border-radius: 12px; margin: 20px 0; border-left: 6px solid #FFC726; }
+.conclusion-section h2 { color: #FFC726; font-size: 1.6rem; margin-top: 0; }
 .conclusion-section p { color: #F1F5F9; }
-.conclusion-section .punchline { color: #FFC726; }
-.evidence-box {
-    background: #F8FAFC;
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin: 10px 0;
-    border-left: 4px solid #00267F;
-    border: 1px solid #E2E8F0;
-}
-.evidence-label {
-    font-size: 0.75rem;
-    color: #475569;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.evidence-text {
-    font-size: 0.9rem;
-    color: #0F172A;
-    line-height: 1.6;
-    margin-top: 4px;
-}
-.evidence-source {
-    font-size: 0.7rem;
-    color: #475569;
-    margin-top: 6px;
-    font-style: italic;
-}
-.data-scope-badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
+.evidence-box { background: #F8FAFC; border-radius: 8px; padding: 14px 18px; margin: 10px 0; border-left: 4px solid #00267F; border: 1px solid #E2E8F0; }
+.evidence-label { font-size: 0.75rem; color: #475569; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.evidence-text { font-size: 0.9rem; color: #0F172A; line-height: 1.6; margin-top: 4px; }
+.evidence-source { font-size: 0.7rem; color: #475569; margin-top: 6px; font-style: italic; }
+.data-scope-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
 .badge-traffic { background: #DBEAFE; color: #1E40AF; }
 .badge-bss { background: #D1FAE5; color: #065F46; }
 .badge-revised { background: #FEF3C7; color: #92400E; }
@@ -252,52 +75,63 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================================
-# DATA
+# DATA — MONTHLY BREAKDOWN (2018-2024)
+# Annual totals are derived by summing the monthly figures.
 # ============================================================================
-GAIA_PASSENGERS = {
-    2018: 2194931, 2019: 2298491, 2020: 768106, 2021: 596063,
-    2022: 1551170, 2023: 2103639, 2024: 2372645,
-}
 
-# BSS Stay-Over Arrivals
-# 2024 = Jan-Nov (617,228 from VA202411 Table 6) + Revised Dec (79,303 from
-#        BSS December 2024 revision note; originally published as 87,112)
-#        = 696,531
-# 2023 = full year 636,540
-# => 2024 is a +9.4% INCREASE over 2023.
-BSS_STAY_OVER = {
-    2018: 678538, 2019: 520881, 2020: 195102, 2021: 144833,
-    2022: 539746, 2023: 636540, 2024: 696531,
+# --- GAIA AIRPORT PASSENGERS (Monthly Totals) ---
+GAIA_MONTHLY = {
+    2018: {1: 236488, 2: 222278, 3: 228888, 4: 178360, 5: 147910, 6: 143269, 7: 164267, 8: 170938, 9: 123418, 10: 133613, 11: 202396, 12: 243106},
+    2019: {1: 252353, 2: 230122, 3: 246508, 4: 199197, 5: 148471, 6: 150635, 7: 175860, 8: 174940, 9: 126330, 10: 140542, 11: 208230, 12: 245303},
+    2020: {1: 249235, 2: 237414, 3: 148679, 4: 2137, 5: 7592, 6: 12299, 7: 5006, 8: 14506, 9: 14906, 10: 21029, 11: 19335, 12: 35968},
+    2021: {1: 25855, 2: 10744, 3: 10756, 4: 8073, 5: 18925, 6: 28611, 7: 51858, 8: 68234, 9: 60653, 10: 66337, 11: 103087, 12: 142930},
+    2022: {1: 139383, 2: 134822, 3: 165457, 4: 134347, 5: 94891, 6: 95743, 7: 114413, 8: 114296, 9: 94332, 10: 104573, 11: 165166, 12: 193747},
+    2023: {1: 220498, 2: 213039, 3: 228520, 4: 174585, 5: 118950, 6: 111185, 7: 139745, 8: 153690, 9: 122947, 10: 131123, 11: 218329, 12: 271028},
+    2024: {1: 257832, 2: 250572, 3: 265256, 4: 193372, 5: 155345, 6: 148112, 7: 156128, 8: 175513, 9: 126749, 10: 137476, 11: 232553, 12: 273737},
 }
+GAIA_PASSENGERS = {year: sum(data.values()) for year, data in GAIA_MONTHLY.items()}
 
-# BSS Cruise Arrivals
-# 2024 figure is Jan-Nov YTD only (VA202411 Table 6). The December 2024
-# cruise bulletin was not available at time of compilation.
-BSS_CRUISE = {
-    2018: 836155, 2019: 557171, 2020: 343791, 2021: 97450,
-    2022: 357853, 2023: 656904, 2024: 649125,  # 2024 = Jan–Nov YTD
+# --- BSS STAY-OVER ARRIVALS (Monthly) ---
+# NOTE: 2019 only has Jan-Sep data. We use the YTD total from the Sept bulletin.
+BSS_STAY_OVER_MONTHLY = {
+    2018: {1: 65970, 2: 66916, 3: 70445, 4: 57054, 5: 50255, 6: 46334, 7: 55623, 8: 51995, 9: 35759, 10: 46519, 11: 59483, 12: 72184},
+    2019: {1: 69496, 2: 68609, 3: 70669, 4: 63364, 5: 50717, 6: 50160, 7: 60248, 8: 50757, 9: 36861}, # Q4 2019 missing
+    2020: {1: 59572, 2: 63124, 3: 31152, 4: 136, 5: 346, 6: 494, 7: 2056, 8: 6102, 9: 4867, 10: 2389, 11: 6669, 12: 18195},
+    2021: {1: 3547, 2: 1880, 3: 1769, 4: 1865, 5: 3362, 6: 6448, 7: 11524, 8: 15620, 9: 17209, 10: 18504, 11: 23749, 12: 39356},
+    2022: {1: 48848, 2: 54607, 3: 60728, 4: 47059, 5: 33949, 6: 32763, 7: 39377, 8: 34329, 9: 28847, 10: 34797, 11: 53955, 12: 70487},
+    2023: {1: 70590, 2: 64995, 3: 63732, 4: 45196, 5: 42765, 6: 36670, 7: 46141, 8: 47430, 9: 33972, 10: 43310, 11: 64900, 12: 76839},
+    2024: {1: 73693, 2: 74010, 3: 81125, 4: 54171, 5: 49682, 6: 49316, 7: 49801, 8: 46093, 9: 31782, 10: 43556, 11: 63999, 12: 79303} # Dec 2024 revised
 }
+BSS_STAY_OVER = {year: sum(data.values()) for year, data in BSS_STAY_OVER_MONTHLY.items()}
+# Override 2018 to exact manual sum (BSS printed 678,538, actual is 678,537)
+BSS_STAY_OVER[2018] = 678537
+# Override 2019 to the YTD total from the Sept bulletin (520,881)
+BSS_STAY_OVER[2019] = 520881
+
+# --- BSS CRUISE ARRIVALS (Monthly) ---
+# NOTE: 2019 only has Jan-Sep data. We use the YTD total from the Sept bulletin.
+BSS_CRUISE_MONTHLY = {
+    2018: {1: 152392, 2: 115862, 3: 115862, 4: 63033, 5: 22262, 6: 20105, 7: 18982, 8: 21960, 9: 22982, 10: 19253, 11: 113043, 12: 150419},
+    2019: {1: 141766, 2: 113575, 3: 119576, 4: 75565, 5: 21399, 6: 19675, 7: 19807, 8: 25872, 9: 19936}, # Q4 2019 missing
+    2020: {1: 147012, 2: 115356, 3: 81363, 4: 3, 5: 31, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 26, 12: 0},
+    2021: {1: 0, 2: 0, 3: 0, 4: 36, 5: 1, 6: 2012, 7: 2082, 8: 1961, 9: 403, 10: 1945, 11: 25261, 12: 63749},
+    2022: {1: 47149, 2: 38922, 3: 55154, 4: 34664, 5: 1, 6: 0, 7: 0, 8: 0, 9: 2281, 10: 11638, 11: 62495, 12: 105550},
+    2023: {1: 122403, 2: 114243, 3: 124430, 4: 68366, 5: 5123, 6: 0, 7: 0, 8: 0, 9: 0, 10: 6766, 11: 84725, 12: 130938},
+    2024: {1: 127562, 2: 128410, 3: 137893, 4: 60188, 5: 13304, 6: 7671, 7: 7022, 8: 13107, 9: 6570, 10: 13981, 11: 113417, 12: 0} # Dec 2024 missing
+}
+BSS_CRUISE = {year: sum(data.values()) for year, data in BSS_CRUISE_MONTHLY.items()}
+# Override 2019 to the YTD total from the Sept bulletin (557,171)
+BSS_CRUISE[2019] = 557171
 
 # ============================================================================
-# WORLD CUP / KENSINGTON OVAL CONTEXT (VERIFIED)
-# ============================================================================
-# Loan: USD 25 million (BDS$50 million) term loan facility from Afreximbank
-# to Kensington Oval Management Inc. (KOMI), guaranteed by the Government
-# of Barbados. Signed November 1, 2023 at ACTIF23, Georgetown, Guyana.
-# Purpose: Rehabilitation and upgrade of Kensington Oval ahead of the
-# 2024 ICC Men's T20 World Cup (June 4–30, 2024).
+# WORLD CUP / KENSINGTON OVAL CONTEXT
 # ============================================================================
 WORLD_CUP_CONTEXT = {
-    "loan_usd": 25_000_000,
-    "loan_bbd": 50_000_000,
-    "lender": "Afreximbank",
-    "borrower": "Kensington Oval Management Inc. (KOMI)",
-    "guarantor": "Government of Barbados",
-    "signed": "November 1, 2023",
-    "purpose": "Rehabilitation and upgrade of Kensington Oval ahead of the 2024 ICC Men's T20 World Cup",
+    "loan_usd": 25_000_000, "loan_bbd": 50_000_000, "lender": "Afreximbank",
+    "borrower": "Kensington Oval Management Inc. (KOMI)", "guarantor": "Government of Barbados",
+    "signed": "November 1, 2023", "purpose": "Rehabilitation and upgrade of Kensington Oval ahead of the 2024 ICC Men's T20 World Cup",
     "event_dates": "June 4–30, 2024",
 }
-
 WORLD_CUP_BASELINE = {
     2018: {"arrivals": BSS_STAY_OVER[2018], "context": "Last normal pre-COVID year; no World Cup; no stadium loan"},
     2023: {"arrivals": BSS_STAY_OVER[2023], "context": "Year before the World Cup"},
@@ -343,11 +177,6 @@ def format_number(n):
         return "N/A"
     return f"{n:,.0f}"
 
-def format_pct(n):
-    if n is None:
-        return "N/A"
-    return f"{n:.1f}%"
-
 def get_badge(source):
     if source == "traffic":
         return '<span class="data-scope-badge badge-traffic">📊 GAIA Inc. Traffic Statistics</span>'
@@ -380,9 +209,7 @@ def render_overview():
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="background:#EFF6FF; color:#1E3A8A; padding:16px 20px; border-radius:10px;
-                border-left:5px solid #00267F; margin:15px 0;
-                border-top:1px solid #93C5FD; border-right:1px solid #93C5FD; border-bottom:1px solid #93C5FD;">
+    <div style="background:#EFF6FF; color:#1E3A8A; padding:16px 20px; border-radius:10px; border-left:5px solid #00267F; margin:15px 0; border-top:1px solid #93C5FD; border-right:1px solid #93C5FD; border-bottom:1px solid #93C5FD;">
         <p style="margin:0; font-size:0.95rem; color:#1E3A8A; line-height:1.7;">
         <strong style="color:#1E3A8A;">The airport counts everyone through the terminal.</strong>
         The Barbados Statistical Service counts only the stay-over visitors.
@@ -438,6 +265,20 @@ def render_overview():
     </div>
     """, unsafe_allow_html=True)
 
+    # NEW: Highlighting the Conversion Rate Decline
+    pct_2018 = (BSS_STAY_OVER[2018] / GAIA_PASSENGERS[2018]) * 100
+    pct_2022 = (BSS_STAY_OVER[2022] / GAIA_PASSENGERS[2022]) * 100
+    pct_2023 = (BSS_STAY_OVER[2023] / GAIA_PASSENGERS[2023]) * 100
+    pct_2024 = (BSS_STAY_OVER[2024] / GAIA_PASSENGERS[2024]) * 100
+
+    st.markdown(f"""
+    <div class="issue-warning" style="margin-top:10px;">
+        <strong>📉 The Conversion Rate Story:</strong> Despite the record-breaking <em>number</em> of stay-over visitors in 2024, the <em>percentage</em> of airport passengers who were actual stay-over tourists fell to its lowest point in the dataset.<br><br>
+        <strong>2018:</strong> {pct_2018:.1f}% | <strong>2022:</strong> {pct_2022:.1f}% | <strong>2023:</strong> {pct_2023:.1f}% | <strong>2024:</strong> {pct_2024:.1f}%<br><br>
+        Airport traffic grew faster than stay-over tourism, meaning a larger share of people passing through GAIA were non-tourists (transit, locals, business, etc.).
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("""
     <div class="issue-unknown" style="margin-top:10px;">
         <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The annual 2024 stay-over total shown here (696,531) uses the revised December figure plus the Jan–Nov YTD total (617,228). The full-year 2024 sub-category breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS.
@@ -451,21 +292,9 @@ def render_overview():
     cruise_vals = [BSS_CRUISE[y] for y in years]
 
     fig = make_subplots(specs=[[{"secondary_y": False}]])
-    fig.add_trace(go.Scatter(
-        x=years, y=gaia_vals, name="GAIA Total Passengers",
-        line=dict(color="#3B82F6", width=3), mode="lines+markers",
-        marker=dict(size=8)
-    ))
-    fig.add_trace(go.Scatter(
-        x=years, y=bss_vals, name="BSS Stay-Over Arrivals",
-        line=dict(color="#10B981", width=3), mode="lines+markers",
-        marker=dict(size=8)
-    ))
-    fig.add_trace(go.Scatter(
-        x=years, y=cruise_vals, name="BSS Cruise Arrivals",
-        line=dict(color="#F59E0B", width=2, dash="dash"), mode="lines+markers",
-        marker=dict(size=6)
-    ))
+    fig.add_trace(go.Scatter(x=years, y=gaia_vals, name="GAIA Total Passengers", line=dict(color="#3B82F6", width=3), mode="lines+markers", marker=dict(size=8)))
+    fig.add_trace(go.Scatter(x=years, y=bss_vals, name="BSS Stay-Over Arrivals", line=dict(color="#10B981", width=3), mode="lines+markers", marker=dict(size=8)))
+    fig.add_trace(go.Scatter(x=years, y=cruise_vals, name="BSS Cruise Arrivals", line=dict(color="#F59E0B", width=2, dash="dash"), mode="lines+markers", marker=dict(size=6)))
     fig.update_layout(
         height=420, showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
@@ -562,7 +391,7 @@ def render_year_explorer():
 
     render_proverb("year")
 
-    years = [2018, 2022, 2023, 2024]
+    years = [2018, 2019, 2022, 2023, 2024]
     year = st.selectbox("Select Year", years, index=len(years)-1)
 
     st.markdown(f"## {year}")
@@ -581,7 +410,7 @@ def render_year_explorer():
         <div class="metric-card" style="border-left:4px solid #10B981;">
             <div class="metric-label">BSS Stay-Over Arrivals</div>
             <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[year])}</div>
-            <div class="metric-context">{get_badge('revised' if year in [2022, 2024] else 'bss')}</div>
+            <div class="metric-context">{get_badge('revised' if year in [2022, 2024] else 'bss')} {'(Jan-Sept YTD)' if year == 2019 else ''}</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
@@ -589,11 +418,17 @@ def render_year_explorer():
         <div class="metric-card" style="border-left:4px solid #F59E0B;">
             <div class="metric-label">BSS Cruise Arrivals</div>
             <div class="metric-value" style="color:#B45309;">{format_number(BSS_CRUISE[year])}</div>
-            <div class="metric-context">{get_badge('bss')} {'(Jan-Nov YTD)' if year == 2024 else ''}</div>
+            <div class="metric-context">{get_badge('bss')} {'(Jan-Sept YTD)' if year == 2019 else '(Jan-Nov YTD)' if year == 2024 else ''}</div>
         </div>
         """, unsafe_allow_html=True)
 
-    if year == 2024:
+    if year == 2019:
+        st.markdown("""
+        <div class="issue-warning" style="margin-top:20px;">
+            <strong>⚠️ 2019 Data Note:</strong> The BSS bulletins for October, November, and December 2019 were not provided. The totals shown here reflect only the <strong>January to September</strong> period (520,881 stay-over and 557,171 cruise arrivals).
+        </div>
+        """, unsafe_allow_html=True)
+    elif year == 2024:
         st.markdown(f"""
         <div class="issue-good" style="margin-top:20px;">
             <strong>✅ 2024 Stay-Over Total is Finalized at {format_number(BSS_STAY_OVER[2024])}:</strong>
@@ -988,6 +823,59 @@ def render_worldcup():
     """, unsafe_allow_html=True)
 
 # ============================================================================
+# VIEW: MONTHLY DATA EXPLORER (NEW)
+# ============================================================================
+def render_monthly():
+    st.markdown("""
+    <div class="main-header">🗓️ Monthly Data Explorer</div>
+    <div class="main-subheader">Month-by-month validation of annual totals</div>
+    <div class="barbados-flag-bar"></div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="issue-info">
+        <strong>📌 Data Integrity:</strong> This view displays the raw monthly figures used to calculate the annual totals. Where months are missing (e.g., 2019 BSS data, 2024 cruise data), it is explicitly noted. This allows you to verify that the annual sums are correct.
+    </div>
+    """, unsafe_allow_html=True)
+
+    data_type = st.radio("Select Data Source", ["GAIA Passengers", "BSS Stay-Over Arrivals", "BSS Cruise Arrivals"], horizontal=True)
+
+    if data_type == "GAIA Passengers":
+        df = pd.DataFrame(GAIA_MONTHLY).T
+        title = "GAIA Monthly Passenger Totals"
+    elif data_type == "BSS Stay-Over Arrivals":
+        df = pd.DataFrame(BSS_STAY_OVER_MONTHLY).T
+        title = "BSS Monthly Stay-Over Arrivals"
+    else:
+        df = pd.DataFrame(BSS_CRUISE_MONTHLY).T
+        title = "BSS Monthly Cruise Arrivals"
+
+    # Rename columns to month names
+    df.columns = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    
+    # Add annual total column
+    df["Annual Total"] = df.sum(axis=1, min_count=1) # min_count to handle all-NaN rows if any
+    
+    # Format as strings with commas, and replace NaN with "—"
+    df_formatted = df.applymap(lambda x: f"{x:,.0f}" if pd.notnull(x) else "—")
+
+    st.markdown(f"### {title}")
+    st.dataframe(df_formatted, use_container_width=True)
+
+    if data_type == "BSS Stay-Over Arrivals":
+        st.markdown("""
+        <div class="issue-warning">
+            <strong>⚠️ Note on 2019:</strong> Only Jan–Sept data was provided. The annual total shown (520,881) is the YTD figure from the September bulletin. Q4 2019 is missing.
+        </div>
+        """, unsafe_allow_html=True)
+    elif data_type == "BSS Cruise Arrivals":
+        st.markdown("""
+        <div class="issue-warning">
+            <strong>⚠️ Note on missing data:</strong> 2019 only has Jan–Sept data (YTD total 557,171). 2024 is missing December (Jan–Nov YTD total 649,125).
+        </div>
+        """, unsafe_allow_html=True)
+
+# ============================================================================
 # VIEW: CONCLUSION
 # ============================================================================
 def render_conclusion():
@@ -1068,23 +956,34 @@ def render_conclusion():
 # DOWNLOAD FUNCTIONS
 # ============================================================================
 def generate_csv():
-    years = sorted(GAIA_PASSENGERS.keys())
+    # Create a comprehensive monthly dataframe
     rows = []
-    for y in years:
-        rows.append({
-            "Year": y,
-            "GAIA_Total_Passengers": GAIA_PASSENGERS[y],
-            "BSS_StayOver_Arrivals": BSS_STAY_OVER[y],
-            "BSS_Cruise_Arrivals": BSS_CRUISE[y],
-            "Gap_NonTourists": GAIA_PASSENGERS[y] - BSS_STAY_OVER[y],
-        })
-    return pd.DataFrame(rows).to_csv(index=False)
+    for year in sorted(GAIA_MONTHLY.keys()):
+        for month in range(1, 13):
+            month_name = datetime(2000, month, 1).strftime('%b')
+            
+            gaia_val = GAIA_MONTHLY.get(year, {}).get(month, None)
+            stay_val = BSS_STAY_OVER_MONTHLY.get(year, {}).get(month, None)
+            cruise_val = BSS_CRUISE_MONTHLY.get(year, {}).get(month, None)
+            
+            rows.append({
+                "Year": year,
+                "Month": month_name,
+                "Month_Num": month,
+                "GAIA_Total_Passengers": gaia_val,
+                "BSS_StayOver_Arrivals": stay_val,
+                "BSS_Cruise_Arrivals": cruise_val
+            })
+    
+    df = pd.DataFrame(rows)
+    return df.to_csv(index=False)
 
 def generate_html_summary():
     years = sorted(GAIA_PASSENGERS.keys())
     rows_main = ""
     for y in years:
         gap = GAIA_PASSENGERS[y] - BSS_STAY_OVER[y]
+        pct = (BSS_STAY_OVER[y] / GAIA_PASSENGERS[y] * 100) if GAIA_PASSENGERS[y] > 0 else 0
         rows_main += f"""
         <tr>
             <td>{y}</td>
@@ -1092,6 +991,7 @@ def generate_html_summary():
             <td>{BSS_STAY_OVER[y]:,.0f}</td>
             <td>{BSS_CRUISE[y]:,.0f}</td>
             <td>{gap:,.0f}</td>
+            <td>{pct:.1f}%</td>
         </tr>
         """
 
@@ -1148,6 +1048,12 @@ def generate_html_summary():
         length_body += f"<td>{avg:.1f}</td><td>-</td>"
     length_body += "</tr>"
 
+    # Conversion rate data for HTML
+    pct_2018 = (BSS_STAY_OVER[2018] / GAIA_PASSENGERS[2018]) * 100
+    pct_2022 = (BSS_STAY_OVER[2022] / GAIA_PASSENGERS[2022]) * 100
+    pct_2023 = (BSS_STAY_OVER[2023] / GAIA_PASSENGERS[2023]) * 100
+    pct_2024 = (BSS_STAY_OVER[2024] / GAIA_PASSENGERS[2024]) * 100
+
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -1168,6 +1074,7 @@ def generate_html_summary():
         .footer {{ margin-top: 30px; padding-top: 20px; border-top: 3px solid #00267F; text-align: center; font-size: 0.8rem; color: #475569; }}
         .note {{ background: #FEF3C7; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; }}
         .growth {{ background: #ECFDF5; color: #064E3B; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #10B981; margin: 16px 0; font-size: 0.85rem; border: 1px solid #6EE7B7; }}
+        .conversion {{ background: #FFFBEB; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; border: 1px solid #FCD34D; }}
         .worldcup {{ background: #EFF6FF; color: #1E3A8A; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 16px 0; font-size: 0.85rem; border: 1px solid #93C5FD; }}
         .dedication {{ margin-top: 20px; padding: 15px; background: #F8F5F0; border-radius: 8px; text-align: center; font-style: italic; color: #00267F; font-weight: bold; }}
     </style></head>
@@ -1182,7 +1089,7 @@ def generate_html_summary():
 
         <h2>1. GAIA vs. BSS — The Main Numbers</h2>
         <table>
-            <thead><tr><th>Year</th><th>GAIA Passengers</th><th>BSS Stay-Over</th><th>BSS Cruise</th><th>Gap (Non-Tourists)</th></tr></thead>
+            <thead><tr><th>Year</th><th>GAIA Passengers</th><th>BSS Stay-Over</th><th>BSS Cruise</th><th>Gap (Non-Tourists)</th><th>Stay-Over %</th></tr></thead>
             <tbody>{rows_main}</tbody>
         </table>
 
@@ -1190,8 +1097,14 @@ def generate_html_summary():
             <strong>✅ 2024 Was a Year of Growth:</strong> Stay-over arrivals rose to <strong>696,531</strong>, a <strong>+9.4% increase</strong> over 2023 (636,540). The annual 2024 total incorporates the BSS revised December figure (79,303, originally 87,112) plus the Jan–Nov YTD total (617,228).
         </div>
 
+        <div class="conversion">
+            <strong>📉 The Conversion Rate Story:</strong> Despite the record-breaking <em>number</em> of stay-over visitors in 2024, the <em>percentage</em> of airport passengers who were actual stay-over tourists fell to its lowest point in the dataset.<br><br>
+            <strong>2018:</strong> {pct_2018:.1f}% | <strong>2022:</strong> {pct_2022:.1f}% | <strong>2023:</strong> {pct_2023:.1f}% | <strong>2024:</strong> {pct_2024:.1f}%<br><br>
+            Airport traffic grew faster than stay-over tourism, meaning a larger share of people passing through GAIA were non-tourists (transit, locals, business, etc.).
+        </div>
+
         <div class="note">
-            <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 sub-category breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023. Note also that the 2024 cruise figure (649,125) is Jan–Nov YTD only — December 2024 cruise data was not available at time of compilation.
+            <strong>📝 BSS Revision Note:</strong> The December 2024 visitor arrival numbers were revised downward (from 87,112 to 79,303) due to IT issues at the Immigration Department. The full-year 2024 sub-category breakdowns (Country, Purpose, Length of Stay) are pending final release by the BSS. The detailed tables below cover 2018, 2022, and 2023. Note also that the 2024 cruise figure (649,125) is Jan–Nov YTD only — December 2024 cruise data was not available at time of compilation. 2019 BSS data covers Jan–Sept only.
         </div>
 
         <div class="worldcup">
@@ -1273,6 +1186,7 @@ with st.sidebar:
         "🛳️ Cruise vs. Stay-Over",
         "✈️ Airport Traffic vs. Visitor Arrivals",
         "🏏 The World Cup Context",
+        "🗓️ Monthly Data Explorer",
         "📖 Conclusion",
     ]
     view = st.selectbox("Select View", views, index=0)
@@ -1307,6 +1221,8 @@ elif view == "✈️ Airport Traffic vs. Visitor Arrivals":
     render_divergence()
 elif view == "🏏 The World Cup Context":
     render_worldcup()
+elif view == "🗓️ Monthly Data Explorer":
+    render_monthly()
 elif view == "📖 Conclusion":
     render_conclusion()
 
