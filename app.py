@@ -857,7 +857,8 @@ def render_monthly():
     df["Annual Total"] = df.sum(axis=1, min_count=1) # min_count to handle all-NaN rows if any
     
     # Format as strings with commas, and replace NaN with "—"
-    df_formatted = df.applymap(lambda x: f"{x:,.0f}" if pd.notnull(x) else "—")
+    # NOTE: DataFrame.applymap was removed in pandas 3.0; use DataFrame.map instead.
+    df_formatted = df.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "—")
 
     st.markdown(f"### {title}")
     st.dataframe(df_formatted, use_container_width=True)
