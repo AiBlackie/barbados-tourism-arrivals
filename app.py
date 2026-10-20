@@ -20,7 +20,7 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 6.0 (Free public edition — latest data, no forecast)
+# VERSION: 6.1 (Free public edition — 2026 partial-year kept out of charts)
 # DATE: October 2026
 # ============================================================================
 
@@ -612,7 +612,9 @@ def render_cruise():
 
     render_proverb("cruise")
 
-    years = sorted(BSS_STAY_OVER.keys())
+    # NOTE: Chart intentionally stops at the latest FULL year. 2026 is partial-year
+    # in both series (BSS Jan-Apr) and would distort the grouped comparison.
+    years = [y for y in sorted(BSS_STAY_OVER.keys()) if y <= LATEST_FULL_YEAR]
     stay_vals = [BSS_STAY_OVER[y] for y in years]
     cruise_vals = [BSS_CRUISE[y] for y in years]
 
@@ -621,13 +623,13 @@ def render_cruise():
     fig.add_trace(go.Bar(x=years, y=cruise_vals, name="Cruise Arrivals", marker_color="#F59E0B", hovertemplate="Year: %{x}<br>Cruise: %{y:,.0f}<extra></extra>"))
     fig.update_layout(
         barmode="group", height=420,
-        title=f"Stay-Over vs. Cruise Arrivals (2018–{LATEST_PARTIAL_YEAR})",
+        title=f"Stay-Over vs. Cruise Arrivals (2018–{LATEST_FULL_YEAR})",
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         yaxis_title="Arrivals", yaxis_tickformat=",",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2026 is Jan–Apr YTD for BSS, Jan–Aug YTD for GAIA.")
+    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2024 cruise is missing December; 2026 is shown in the callout on the Overview, not on this chart.")
 
     st.markdown("### 📊 The Numbers Side by Side")
     rows = []
@@ -658,7 +660,9 @@ def render_divergence():
 
     render_proverb("divergence")
 
-    years = sorted(GAIA_PASSENGERS.keys())
+    # NOTE: Chart intentionally stops at the latest FULL year. 2026 is a partial
+    # year in both series (GAIA Jan-Aug, BSS Jan-Apr) and would show a fake gap.
+    years = [y for y in sorted(GAIA_PASSENGERS.keys()) if y <= LATEST_FULL_YEAR]
     gaia_vals = [GAIA_PASSENGERS[y] for y in years]
     bss_vals = [BSS_STAY_OVER[y] for y in years]
 
@@ -677,7 +681,7 @@ def render_divergence():
     ))
     fig.update_layout(
         height=450,
-        title="Airport Traffic vs. Actual Tourists — The Divergence",
+        title=f"Airport Traffic vs. Actual Tourists — The Divergence (2018–{LATEST_FULL_YEAR})",
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         yaxis_title="Number of People", yaxis_tickformat=",",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
@@ -812,11 +816,11 @@ def render_worldcup():
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+    st.markdown(f"""
     <div class="issue-info" style="margin-top:10px;">
         <strong>📌 Update:</strong> Since the World Cup year, arrivals have continued to grow.
-        In 2025 — the latest full year in this dashboard — stay-over arrivals reached
-        <strong>707,046</strong>, and GAIA total passengers reached <strong>2,417,065</strong>.
+        In {LATEST_FULL_YEAR} — the latest full year in this dashboard — stay-over arrivals reached
+        <strong>{BSS_STAY_OVER[LATEST_FULL_YEAR]:,.0f}</strong>, and GAIA total passengers reached <strong>{GAIA_PASSENGERS[LATEST_FULL_YEAR]:,.0f}</strong>.
         The full series is on the <em>Overview</em> page.
     </div>
     """, unsafe_allow_html=True)
