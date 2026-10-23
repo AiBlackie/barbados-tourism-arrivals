@@ -20,9 +20,8 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 6.8 (Free public edition — September 2026 GAIA airport traffic added; 
-#              2018 set to official BSS PDF totals; 2023, 2024, 2025 categories 
-#              reconciled to revised BSS website; 2026 partial-year kept out of charts)
+# VERSION: 7.1 (Free public edition — HTML Length of Stay table sorted 
+#              chronologically; dynamic category handling refined)
 # DATE: October 2026
 # ============================================================================
 
@@ -107,7 +106,6 @@ GAIA_MONTHLY = {
 GAIA_PASSENGERS = {year: sum(v for v in data.values() if v is not None) for year, data in GAIA_MONTHLY.items()}
 
 # --- BSS STAY-OVER ARRIVALS (Monthly) ---
-# 2025 updated to match BSS revised website tables
 BSS_STAY_OVER_MONTHLY = {
     2018: {1: 65970, 2: 66916, 3: 70445, 4: 57054, 5: 50255, 6: 46334, 7: 55623, 8: 51995, 9: 35759, 10: 46519, 11: 59483, 12: 72184},
     2019: {1: 69496, 2: 68609, 3: 70669, 4: 63364, 5: 50717, 6: 50160, 7: 60248, 8: 50757, 9: 36861, 10: None, 11: None, 12: None}, # Q4 missing
@@ -126,7 +124,6 @@ BSS_STAY_OVER[2018] = 678537
 BSS_STAY_OVER[2019] = 520881
 
 # --- BSS CRUISE ARRIVALS (Monthly) ---
-# 2025 updated to match BSS revised website tables
 BSS_CRUISE_MONTHLY = {
     2018: {1: 152392, 2: 115862, 3: 115862, 4: 63033, 5: 22262, 6: 20105, 7: 18982, 8: 21960, 9: 22982, 10: 19253, 11: 113043, 12: 150419},
     2019: {1: 141766, 2: 113575, 3: 119576, 4: 75565, 5: 21399, 6: 19675, 7: 19807, 8: 25872, 9: 19936, 10: None, 11: None, 12: None}, # Q4 missing
@@ -143,7 +140,6 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
-# 2025 updated to match BSS revised website tables
 BSS_BY_COUNTRY = {
     2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
@@ -155,7 +151,6 @@ BSS_BY_COUNTRY = {
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
-# 2025 updated to match BSS revised website tables
 BSS_PURPOSE = {
     2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
     2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
@@ -164,7 +159,6 @@ BSS_PURPOSE = {
     2025: {"Recreation": 487150, "Business": 48940, "Study": 6842, "Health Care": 1575, "Intransit": 11291, "Other": 147120, "Special Event": 4128},
 }
 
-# 2025 updated to match BSS revised website tables
 BSS_LENGTH = {
     2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
@@ -1055,8 +1049,14 @@ def generate_html_summary():
             country_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         country_body += "</tr>"
 
-    purpose_years = [2018, 2022, 2023]
-    purposes = ["Recreation", "Holiday", "Visiting Friends", "Business", "Study", "Health Care", "Honeymoon", "Sports", "Intransit", "Other"]
+    # Dynamically build purpose table to handle BSS schema changes
+    purpose_years = [2018, 2022, 2023, 2025]
+    all_purposes = set()
+    for y in purpose_years:
+        if y in BSS_PURPOSE:
+            all_purposes.update(BSS_PURPOSE[y].keys())
+    purposes = sorted(list(all_purposes))
+    
     purpose_header = "<tr><th>Purpose</th>"
     for y in purpose_years:
         purpose_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
@@ -1071,8 +1071,26 @@ def generate_html_summary():
             purpose_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         purpose_body += "</tr>"
 
-    length_years = [2018, 2022, 2023]
-    lengths = ["1 Day", "2-3 Days", "4-7 Days", "8-14 Days", "15-21 Days", "22-28 Days", "29-182 Days"]
+    # Dynamically build length of stay table
+    length_years = [2018, 2022, 2023, 2025]
+    all_lengths = set()
+    for y in length_years:
+        if y in BSS_LENGTH:
+            all_lengths.update(k for k in BSS_LENGTH[y].keys() if k != "Avg")
+    
+    # Sort lengths chronologically
+    def length_sort_key(val):
+        if val == "1 Day": return 1
+        if val == "2-3 Days": return 2
+        if val == "4-7 Days": return 3
+        if val == "8-14 Days": return 4
+        if val == "15-21 Days": return 5
+        if val == "22-28 Days": return 6
+        if val == "29-182 Days": return 7
+        return 8
+
+    lengths = sorted(list(all_lengths), key=length_sort_key)
+    
     length_header = "<tr><th>Category</th>"
     for y in length_years:
         length_header += f"<th>{y} Arrivals</th><th>{y} %</th>"
