@@ -20,9 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 6.7 (Free public edition — 2025 categories and cruise arrivals 
-#              perfectly reconciled to revised BSS website tables; 2018 set 
-#              to official BSS PDF totals; 2026 partial-year kept out of charts)
+# VERSION: 6.8 (Free public edition — September 2026 GAIA airport traffic added; 
+#              2018 set to official BSS PDF totals; 2023, 2024, 2025 categories 
+#              reconciled to revised BSS website; 2026 partial-year kept out of charts)
 # DATE: October 2026
 # ============================================================================
 
@@ -102,12 +102,12 @@ GAIA_MONTHLY = {
     2023: {1: 220498, 2: 213039, 3: 228520, 4: 174585, 5: 118950, 6: 111185, 7: 139745, 8: 153690, 9: 122947, 10: 131123, 11: 218329, 12: 271028},
     2024: {1: 257832, 2: 250572, 3: 265256, 4: 193372, 5: 155345, 6: 148112, 7: 156128, 8: 175513, 9: 126749, 10: 137476, 11: 232553, 12: 273737},
     2025: {1: 274035, 2: 241533, 3: 263404, 4: 206347, 5: 149938, 6: 144397, 7: 173110, 8: 182024, 9: 127778, 10: 138669, 11: 226527, 12: 289303},
-    2026: {1: 290504, 2: 252655, 3: 253902, 4: 198463, 5: 157247, 6: 143535, 7: 175021, 8: 177196, 9: None, 10: None, 11: None, 12: None} # Jan-Aug only
+    2026: {1: 290504, 2: 252655, 3: 253902, 4: 198463, 5: 157247, 6: 143535, 7: 175021, 8: 177196, 9: 132567, 10: None, 11: None, 12: None} # Jan-Sept only
 }
 GAIA_PASSENGERS = {year: sum(v for v in data.values() if v is not None) for year, data in GAIA_MONTHLY.items()}
 
 # --- BSS STAY-OVER ARRIVALS (Monthly) ---
-# 2025 updated to match BSS revised website tables (Screenshot 2)
+# 2025 updated to match BSS revised website tables
 BSS_STAY_OVER_MONTHLY = {
     2018: {1: 65970, 2: 66916, 3: 70445, 4: 57054, 5: 50255, 6: 46334, 7: 55623, 8: 51995, 9: 35759, 10: 46519, 11: 59483, 12: 72184},
     2019: {1: 69496, 2: 68609, 3: 70669, 4: 63364, 5: 50717, 6: 50160, 7: 60248, 8: 50757, 9: 36861, 10: None, 11: None, 12: None}, # Q4 missing
@@ -126,7 +126,7 @@ BSS_STAY_OVER[2018] = 678537
 BSS_STAY_OVER[2019] = 520881
 
 # --- BSS CRUISE ARRIVALS (Monthly) ---
-# 2025 updated to match BSS revised website tables (Screenshot 4)
+# 2025 updated to match BSS revised website tables
 BSS_CRUISE_MONTHLY = {
     2018: {1: 152392, 2: 115862, 3: 115862, 4: 63033, 5: 22262, 6: 20105, 7: 18982, 8: 21960, 9: 22982, 10: 19253, 11: 113043, 12: 150419},
     2019: {1: 141766, 2: 113575, 3: 119576, 4: 75565, 5: 21399, 6: 19675, 7: 19807, 8: 25872, 9: 19936, 10: None, 11: None, 12: None}, # Q4 missing
@@ -143,7 +143,7 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
-# 2025 updated to match BSS revised website tables (Screenshot 1)
+# 2025 updated to match BSS revised website tables
 BSS_BY_COUNTRY = {
     2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
@@ -155,7 +155,7 @@ BSS_BY_COUNTRY = {
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
-# 2025 updated to match BSS revised website tables (Screenshot 2)
+# 2025 updated to match BSS revised website tables
 BSS_PURPOSE = {
     2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
     2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
@@ -164,7 +164,7 @@ BSS_PURPOSE = {
     2025: {"Recreation": 487150, "Business": 48940, "Study": 6842, "Health Care": 1575, "Intransit": 11291, "Other": 147120, "Special Event": 4128},
 }
 
-# 2025 updated to match BSS revised website tables (Screenshot 3)
+# 2025 updated to match BSS revised website tables
 BSS_LENGTH = {
     2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
@@ -318,13 +318,13 @@ def render_overview():
 
     st.markdown(f"""
     <div class="issue-unknown" style="margin-top:10px;">
-        <strong>📝 {LATEST_PARTIAL_YEAR} Data Note:</strong> The Barbados Statistical Service has published data for <strong>January to April {LATEST_PARTIAL_YEAR}</strong> ({format_number(ytd_bss)} stay-over arrivals). GAIA has published data for <strong>January to August {LATEST_PARTIAL_YEAR}</strong> ({format_number(ytd_gaia)} total passengers). The full {LATEST_PARTIAL_YEAR} analysis will be updated as more data becomes available.
+        <strong>📝 {LATEST_PARTIAL_YEAR} Data Note:</strong> The Barbados Statistical Service has published data for <strong>January to April {LATEST_PARTIAL_YEAR}</strong> ({format_number(ytd_bss)} stay-over arrivals). GAIA has published data for <strong>January to September {LATEST_PARTIAL_YEAR}</strong> ({format_number(ytd_gaia)} total passengers). The full {LATEST_PARTIAL_YEAR} analysis will be updated as more data becomes available.
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"### 📈 The Divergence — 2018–{LATEST_FULL_YEAR}")
     # NOTE: Chart intentionally stops at the latest FULL year. 2026 is a partial
-    # year in both series (GAIA Jan-Aug, BSS Jan-Apr) and plotting it alongside
+    # year in both series (GAIA Jan-Sept, BSS Jan-Apr) and plotting it alongside
     # full-year points would show a fake conversion collapse. See the callout above.
     years = [y for y in sorted(GAIA_PASSENGERS.keys()) if y <= LATEST_FULL_YEAR]
     gaia_vals = [GAIA_PASSENGERS[y] for y in years]
@@ -345,7 +345,7 @@ def render_overview():
     fig.update_yaxes(title_text="Number of People", tickformat=",")
     st.plotly_chart(fig, use_container_width=True)
 
-    st.caption(f"Note: 2019 BSS figures are Jan–Sept YTD only. 2022, 2023, 2024, and {LATEST_FULL_YEAR} BSS figures are revised. {LATEST_PARTIAL_YEAR} is partial-year data (BSS Jan–Apr, GAIA Jan–Aug) and is shown in the callout above, not on the chart.")
+    st.caption(f"Note: 2019 BSS figures are Jan–Sept YTD only. 2022, 2023, 2024, and {LATEST_FULL_YEAR} BSS figures are revised. {LATEST_PARTIAL_YEAR} is partial-year data (BSS Jan–Apr, GAIA Jan–Sept) and is shown in the callout above, not on the chart.")
 
 # ============================================================================
 # VIEW: TWO VISITOR STREAMS
@@ -442,7 +442,7 @@ def render_year_explorer():
         <div class="metric-card" style="border-left:4px solid #3B82F6;">
             <div class="metric-label">GAIA Total Passengers</div>
             <div class="metric-value" style="color:#1D4ED8;">{format_number(GAIA_PASSENGERS[year])}</div>
-            <div class="metric-context">{get_badge('traffic')} {'(Jan-Aug YTD)' if year == 2026 else ''}</div>
+            <div class="metric-context">{get_badge('traffic')} {'(Jan-Sept YTD)' if year == 2026 else ''}</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -471,7 +471,7 @@ def render_year_explorer():
     elif year == 2026:
         st.markdown(f"""
         <div class="issue-info" style="margin-top:20px;">
-            <strong>📅 2026 Partial Year:</strong> The BSS has published data for <strong>January to April 2026</strong> ({format_number(BSS_STAY_OVER[2026])} stay-over arrivals). GAIA has published data for <strong>January to August 2026</strong> ({format_number(GAIA_PASSENGERS[2026])} passengers). Full sub-category breakdowns are pending BSS release.
+            <strong>📅 2026 Partial Year:</strong> The BSS has published data for <strong>January to April 2026</strong> ({format_number(BSS_STAY_OVER[2026])} stay-over arrivals). GAIA has published data for <strong>January to September 2026</strong> ({format_number(GAIA_PASSENGERS[2026])} passengers). Full sub-category breakdowns are pending BSS release.
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -668,7 +668,7 @@ def render_divergence():
     render_proverb("divergence")
 
     # NOTE: Chart intentionally stops at the latest FULL year. 2026 is a partial
-    # year in both series (GAIA Jan-Aug, BSS Jan-Apr) and would show a fake gap.
+    # year in both series (GAIA Jan-Sept, BSS Jan-Apr) and would show a fake gap.
     years = [y for y in sorted(GAIA_PASSENGERS.keys()) if y <= LATEST_FULL_YEAR]
     gaia_vals = [GAIA_PASSENGERS[y] for y in years]
     bss_vals = [BSS_STAY_OVER[y] for y in years]
@@ -917,7 +917,7 @@ def render_monthly():
     elif data_type == "BSS Cruise Arrivals":
         st.markdown("""
         <div class="issue-warning">
-            <strong>⚠️ Note on missing data:</strong> 2019 only has Jan–Sept data. 2024 is missing December. 2026 only has Jan–Apr data.
+            <strong>⚠️ Note on missing data:</strong> 2019 only has Jan–Sept data. 2026 only has Jan–Apr data.
         </div>
         """, unsafe_allow_html=True)
 
@@ -985,7 +985,7 @@ def render_conclusion():
         <strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
         <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes).<br>
         <strong>2019:</strong> BSS figures are Jan–Sept YTD only. October–December 2019 bulletins were not available.<br>
-        <strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Aug YTD. Full sub-category breakdowns are pending release.
+        <strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Sept YTD. Full sub-category breakdowns are pending release.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1162,7 +1162,7 @@ def generate_html_summary():
         </div>
 
         <div class="note">
-            <strong>📝 2026 Data Note:</strong> The Barbados Statistical Service has published data for <strong>January to April 2026</strong> ({BSS_STAY_OVER[2026]:,.0f} stay-over arrivals). GAIA has published data for <strong>January to August 2026</strong> ({GAIA_PASSENGERS[2026]:,.0f} total passengers). The full 2026 analysis will be updated as more data becomes available.
+            <strong>📝 2026 Data Note:</strong> The Barbados Statistical Service has published data for <strong>January to April 2026</strong> ({BSS_STAY_OVER[2026]:,.0f} stay-over arrivals). GAIA has published data for <strong>January to September 2026</strong> ({GAIA_PASSENGERS[2026]:,.0f} total passengers). The full 2026 analysis will be updated as more data becomes available.
         </div>
 
         <div class="worldcup">
@@ -1194,7 +1194,7 @@ def generate_html_summary():
         <p><strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable).</p>
         <p><strong>Kensington Oval Loan:</strong> Afreximbank press release, 19 April 2024; Barbados Today, 1 November 2023 — USD 25M (BDS$50M) term loan from Afreximbank to KOMI, guaranteed by the Government of Barbados.</p>
         <p><strong>2019:</strong> BSS figures are Jan–Sept YTD only.</p>
-        <p><strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Aug YTD. Full sub-category breakdowns pending BSS release.</p>
+        <p><strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Sept YTD. Full sub-category breakdowns pending BSS release.</p>
 
         <div class="footer">
             <p><strong>Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals</strong></p>
@@ -1291,7 +1291,7 @@ st.markdown("---")
 st.caption(f"""
 **Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals (Free Public Edition — no forecast)**
 **Airport Traffic Source:** GAIA Inc. Passenger & Cargo Statistics (website). Operational traffic reports, not audited financial statements.
-**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2026 BSS data is Jan–Apr YTD. GAIA 2026 data is Jan–Aug YTD.
+**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2026 BSS data is Jan–Apr YTD. GAIA 2026 data is Jan–Sept YTD.
 **Proverbs:** "De Mortar-Pestle" by G. Addinton Forde (1987). Page numbers verified against source.
 **Author & Compiler:** Matthew A. A. Blackman
 **Generated:** {datetime.now().strftime('%B %d, %Y %I:%M %p')}
