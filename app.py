@@ -20,10 +20,11 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 9.1 (Free public edition — Reconciled 2018 CARICOM total to fix 
-#              BSS source data error. Added "Total" rows to all HTML tables 
-#              for visual verification. All splits 2018-2025 now reconcile 
-#              perfectly to annual totals.)
+# VERSION: 9.2 (Free public edition — Added full 2018 BSS reconciliation
+#              documentation. Headline total 678,537 retained per Table 7
+#              and the monthly PDFs; all divergent splits — 678,538 in
+#              Tables 5 & 8, 679,478 in the country Excel file — are now
+#              explicitly documented on-screen and in the HTML summary.)
 # DATE: October 2026
 # ============================================================================
 
@@ -53,6 +54,35 @@ LATEST_FULL_YEAR = 2025       # Most recent complete calendar year
 LATEST_PARTIAL_YEAR = 2026    # Year with only partial-year data
 
 # ============================================================================
+# 2018 BSS RECONCILIATION — DOCUMENTED DISCREPANCIES
+#
+# The BSS's own 2018 publications disagree on the stay-over total. This
+# block records every figure we found, so the dashboard can show its work
+# rather than silently pick one.
+#
+#   Source                              Total      Difference vs. headline
+#   ----------------------------------  ---------  -----------------------
+#   Monthly PDFs (Jan-Dec summed)       678,537    —  (baseline)
+#   Table 7 — Purpose of Visit          678,537    —  (baseline)
+#   Table 5 — Country of Residence      678,538    +1
+#   Table 8 — Length of Stay            678,538    +1
+#   Country Excel file (split sums)     679,478    +941
+#
+# Headline retained: 678,537 (matches Table 7 + monthly PDFs, and is the
+# figure used by the BSS's own 2015-2022 visitor arrivals table).
+# ============================================================================
+BSS_2018_RECONCILIATION = {
+    "headline_used": 678_537,
+    "sources": [
+        ("Monthly PDFs (Jan–Dec summed)", 678_537, "Baseline — the twelve monthly stay-over figures summed."),
+        ("Table 7 — Purpose of Visit",     678_537, "Baseline — matches the monthly sum exactly."),
+        ("Table 5 — Country of Residence", 678_538, "One higher than the headline."),
+        ("Table 8 — Length of Stay",       678_538, "One higher than the headline."),
+        ("Country Excel file (split sums)", 679_478, "941 higher than the headline; the country split does not reconcile to the printed annual total."),
+    ],
+}
+
+# ============================================================================
 # CUSTOM CSS
 # ============================================================================
 st.markdown("""
@@ -73,6 +103,12 @@ st.markdown("""
 .issue-info { background: #EFF6FF; color: #1E3A8A; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 6px 0; font-size: 0.92rem; border: 1px solid #93C5FD; }
 .issue-good { background: #ECFDF5; color: #064E3B; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #10B981; margin: 6px 0; font-size: 0.92rem; border: 1px solid #6EE7B7; }
 .issue-unknown { background: #F5F3FF; color: #4C1D95; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #8B5CF6; margin: 6px 0; font-size: 0.92rem; border: 1px solid #C4B5FD; }
+.recon-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 6px 0 2px 0; }
+.recon-table th { background: #92400E; color: #FFFFFF; padding: 5px 8px; text-align: left; font-weight: 600; }
+.recon-table td { padding: 4px 8px; border-bottom: 1px solid #FCD34D; color: #78350F; }
+.recon-table tr:last-child td { border-bottom: none; }
+.recon-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.recon-table td.diff { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
 .barbados-flag-bar { height: 4px; background: linear-gradient(90deg, #00267F 0%, #FFC726 50%, #00267F 100%); margin: 5px 0 10px 0; border-radius: 2px; }
 .conclusion-section { background: linear-gradient(135deg, #00267F 0%, #1E40AF 100%); color: #FFFFFF; padding: 25px 30px; border-radius: 12px; margin: 20px 0; border-left: 6px solid #FFC726; }
 .conclusion-section h2 { color: #FFC726; font-size: 1.6rem; margin-top: 0; }
@@ -120,8 +156,9 @@ BSS_STAY_OVER_MONTHLY = {
     2026: {1: 74206, 2: 69155, 3: 71583, 4: 57790, 5: None, 6: None, 7: None, 8: None, 9: None, 10: None, 11: None, 12: None} # Jan-Apr only
 }
 BSS_STAY_OVER = {year: sum(v for v in data.values() if v is not None) for year, data in BSS_STAY_OVER_MONTHLY.items()}
-# Override 2018 to exact official BSS PDF total (678,537)
-BSS_STAY_OVER[2018] = 678537
+# Override 2018 to exact official BSS PDF total (678,537) — matches Table 7
+# and the twelve monthly figures. See BSS_2018_RECONCILIATION above.
+BSS_STAY_OVER[2018] = BSS_2018_RECONCILIATION["headline_used"]
 # Override 2019 to YTD (520,881)
 BSS_STAY_OVER[2019] = 520881
 
@@ -163,7 +200,9 @@ BSS_PURPOSE = {
     2025: {"Recreation": 487150, "Business": 48940, "Study": 6842, "Health Care": 1575, "Intransit": 11291, "Other": 147120, "Special Event": 4128},
 }
 
-# 2018 "1 Day" adjusted by -1 to reconcile perfectly to 678,537
+# 2018 "1 Day" adjusted by -1 to reconcile to the headline 678,537.
+# The BSS Table 8 as printed sums to 678,538; the single-day row is the
+# residual we carry to make the on-screen split agree with Table 7.
 BSS_LENGTH = {
     2018: {"1 Day": 68707, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
@@ -208,6 +247,76 @@ def render_proverb(key):
         <div class="proverb-meaning">— {p['meaning']}</div>
         <div class="proverb-source">Source: "De Mortar-Pestle" by G. Addinton Forde (1987), p. {p['page']}</div>
         <div class="proverb-why">💡 <strong style="color:#FFC726;">Why this proverb fits:</strong> {p['why']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_2018_reconciliation_note(compact=False):
+    """Render the 2018 BSS reconciliation note.
+
+    compact=True is used where a full table would crowd the view (e.g. the
+    Monthly Data Explorer); it keeps the headline explanation and drops
+    the per-source table.
+    """
+    headline = BSS_2018_RECONCILIATION["headline_used"]
+
+    if compact:
+        st.markdown(f"""
+        <div class="issue-warning">
+            <strong>⚠️ 2018 reconciliation note:</strong> BSS's 2018 publications
+            disagree internally. Table 7 (Purpose of Visit) and the twelve monthly
+            PDFs both give <strong>{headline:,.0f}</strong>; Table 5 (Country of
+            Residence) and Table 8 (Length of Stay) both give <strong>678,538</strong>;
+            the country Excel file sums to <strong>679,478</strong>. This dashboard
+            uses the headline <strong>{headline:,.0f}</strong> throughout. The
+            Country and Length-of-Stay splits shown elsewhere are BSS's as-printed
+            figures and may differ by 1–941 from the headline.
+        </div>
+        """, unsafe_allow_html=True)
+        return
+
+    rows = ""
+    for label, total, note in BSS_2018_RECONCILIATION["sources"]:
+        diff = total - headline
+        diff_txt = "—" if diff == 0 else f"{diff:+,.0f}"
+        rows += f"""
+        <tr>
+            <td>{label}</td>
+            <td class="num">{total:,.0f}</td>
+            <td class="diff">{diff_txt}</td>
+            <td>{note}</td>
+        </tr>
+        """
+
+    st.markdown(f"""
+    <div class="issue-warning">
+        <strong>⚠️ 2018 BSS Reconciliation — Documented Discrepancy</strong><br>
+        The Barbados Statistical Service's own 2018 publications disagree on the
+        stay-over total. The dashboard uses the <strong>official headline of
+        {headline:,.0f}</strong> — the figure printed in Table 7 (Purpose of Visit)
+        and obtained by summing the twelve monthly PDFs, and the figure adopted in
+        the BSS's 2015–2022 visitor arrivals table. Other 2018 splits are printed
+        as BSS published them and do not reconcile exactly:
+        <table class="recon-table" style="margin-top:8px;">
+            <thead>
+                <tr>
+                    <th>Source</th>
+                    <th style="text-align:right;">Printed Total</th>
+                    <th style="text-align:right;">Difference</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+        </table>
+        <div style="margin-top:6px; font-size:0.82rem;">
+            <strong>How the dashboard handles it:</strong> the 2018 headline, the
+            conversion rate, and every year-over-year comparison use
+            <strong>{headline:,.0f}</strong>. The country and length-of-stay
+            breakdowns use BSS's printed figures; where a split sums to 678,538 we
+            carry the one-visitor difference on the "1 Day" length-of-stay row so
+            the on-screen split still adds to the headline. The country Excel file
+            (679,478) is flagged but not used — its sum is 941 above the printed
+            annual total.
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -461,6 +570,10 @@ def render_year_explorer():
         </div>
         """, unsafe_allow_html=True)
 
+    if year == 2018:
+        st.markdown("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
+        render_2018_reconciliation_note()
+
     if year == 2019:
         st.markdown("""
         <div class="issue-warning" style="margin-top:20px;">
@@ -475,6 +588,16 @@ def render_year_explorer():
         """, unsafe_allow_html=True)
     else:
         st.markdown("### 🌍 Stay-Over Arrivals by Country of Residence")
+        if year == 2018:
+            st.markdown("""
+            <div class="issue-warning" style="margin-bottom:10px; font-size:0.85rem;">
+                <strong>2018 split caveat:</strong> BSS Table 5 as printed sums to
+                <strong>678,538</strong> (one more than the headline). The country
+                Excel file sums to <strong>679,478</strong>. The chart below shows
+                BSS's as-printed country rows — the headline used everywhere else
+                in this dashboard is <strong>678,537</strong>.
+            </div>
+            """, unsafe_allow_html=True)
         country_data = BSS_BY_COUNTRY.get(year, {})
         if country_data:
             df_country = pd.DataFrame(list(country_data.items()), columns=["Country", "Arrivals"])
@@ -513,6 +636,16 @@ def render_year_explorer():
         if length_data:
             avg = length_data.pop("Avg", None)
             df_length = pd.DataFrame(list(length_data.items()), columns=["Category", "Arrivals"])
+
+            if year == 2018:
+                st.markdown("""
+                <div class="issue-warning" style="margin-bottom:10px; font-size:0.85rem;">
+                    <strong>2018 split caveat:</strong> BSS Table 8 as printed sums to
+                    <strong>678,538</strong>. The "1 Day" row here carries the
+                    one-visitor residual so this on-screen split reconciles to the
+                    headline <strong>678,537</strong> used elsewhere.
+                </div>
+                """, unsafe_allow_html=True)
 
             fig = px.bar(df_length, x="Category", y="Arrivals",
                          title=f"Stay-Over Arrivals by Length of Stay ({year})",
@@ -554,6 +687,8 @@ def render_country():
     </div>
     """, unsafe_allow_html=True)
 
+    render_2018_reconciliation_note(compact=True)
+
     years = [2018, 2022, 2023, 2024, 2025]
     countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe"]
 
@@ -575,6 +710,15 @@ def render_country():
     st.caption("Source: Barbados Statistical Service, Visitor Arrivals Statistics. 2019, 2020, and 2021 omitted because full-year breakdowns are not available or are pandemic-affected.")
 
     st.markdown(f"### 📊 {LATEST_FULL_YEAR} vs. 2018 — Market Shift")
+    st.markdown("""
+    <div class="issue-warning" style="font-size:0.85rem;">
+        <strong>2018 baseline note:</strong> the 2018 column uses BSS Table 5's
+        printed country rows (sum 678,538). The annual headline used elsewhere is
+        678,537 — a one-visitor difference. Shares below are computed against each
+        year's own printed total so the 2018 shares still sum to 100%.
+    </div>
+    """, unsafe_allow_html=True)
+
     rows = []
     for c in countries:
         v2018 = BSS_BY_COUNTRY[2018].get(c, 0)
@@ -888,6 +1032,8 @@ def render_monthly():
     </div>
     """, unsafe_allow_html=True)
 
+    render_2018_reconciliation_note(compact=True)
+
     data_type = st.radio("Select Data Source", ["GAIA Passengers", "BSS Stay-Over Arrivals", "BSS Cruise Arrivals"], horizontal=True)
 
     if data_type == "GAIA Passengers":
@@ -911,6 +1057,12 @@ def render_monthly():
         st.markdown("""
         <div class="issue-warning">
             <strong>⚠️ Note on missing data:</strong> 2019 only has Jan–Sept data. 2026 only has Jan–Apr data.
+            <br><br>
+            <strong>⚠️ 2018 note:</strong> the twelve monthly stay-over figures sum to
+            <strong>678,537</strong>, which is the headline used throughout this
+            dashboard. The BSS's 2018 country and length-of-stay tables print
+            <strong>678,538</strong> and the country Excel file sums to
+            <strong>679,478</strong> — see the reconciliation note above.
         </div>
         """, unsafe_allow_html=True)
     elif data_type == "BSS Cruise Arrivals":
@@ -983,6 +1135,7 @@ def render_conclusion():
         <div class="evidence-text">
         <strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
         <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes).<br>
+        <strong>2018 reconciliation:</strong> Headline 678,537 taken from Table 7 (Purpose of Visit) and the monthly PDFs. Table 5 (Country) and Table 8 (Length of Stay) print 678,538; the country Excel file sums to 679,478. See the reconciliation note on the Year-by-Year Explorer.<br>
         <strong>2019:</strong> BSS figures are Jan–Sept YTD only. October–December 2019 bulletins were not available.<br>
         <strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Sept YTD. Full sub-category breakdowns are pending release.
         </div>
@@ -1049,7 +1202,7 @@ def generate_html_summary():
         country_body += f"<tr><td>{c}</td>"
         for y in country_years:
             val = BSS_BY_COUNTRY.get(y, {}).get(c, 0)
-            total = BSS_STAY_OVER.get(y, 1)
+            total = sum(BSS_BY_COUNTRY.get(y, {}).values())
             pct = (val / total * 100) if total > 0 else 0
             country_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         country_body += "</tr>"
@@ -1071,7 +1224,7 @@ def generate_html_summary():
         purpose_body += f"<tr><td>{p}</td>"
         for y in purpose_years:
             val = BSS_PURPOSE.get(y, {}).get(p, 0)
-            total = BSS_STAY_OVER.get(y, 1)
+            total = sum(BSS_PURPOSE.get(y, {}).values())
             pct = (val / total * 100) if total > 0 else 0
             purpose_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         purpose_body += "</tr>"
@@ -1105,7 +1258,7 @@ def generate_html_summary():
         length_body += f"<tr><td>{l}</td>"
         for y in length_years:
             val = BSS_LENGTH.get(y, {}).get(l, 0)
-            total = BSS_STAY_OVER.get(y, 1)
+            total = sum(v for k, v in BSS_LENGTH.get(y, {}).items() if k != "Avg")
             pct = (val / total * 100) if total > 0 else 0
             length_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         length_body += "</tr>"
@@ -1138,6 +1291,37 @@ def generate_html_summary():
     </div>
     """
 
+    # 2018 reconciliation block (HTML)
+    recon_rows = ""
+    for label, total, note in BSS_2018_RECONCILIATION["sources"]:
+        diff = total - BSS_2018_RECONCILIATION["headline_used"]
+        diff_txt = "—" if diff == 0 else f"{diff:+,.0f}"
+        recon_rows += f"<tr><td>{label}</td><td style='text-align:right;'>{total:,.0f}</td><td style='text-align:right; font-weight:bold;'>{diff_txt}</td><td>{note}</td></tr>"
+
+    recon_block = f"""
+    <h2>0. Data Reconciliation — 2018</h2>
+    <div class="recon">
+        <strong>⚠️ 2018 BSS Reconciliation — Documented Discrepancy</strong><br>
+        The Barbados Statistical Service's own 2018 publications disagree on the stay-over total.
+        This summary uses the <strong>official headline of {BSS_2018_RECONCILIATION['headline_used']:,}</strong>
+        — the figure printed in Table 7 (Purpose of Visit) and obtained by summing the twelve
+        monthly PDFs, and the figure adopted in the BSS's 2015–2022 visitor arrivals table.
+        Other 2018 splits are printed as BSS published them and do not reconcile exactly:
+        <table style="margin-top:8px;">
+            <thead><tr><th>Source</th><th style="text-align:right;">Printed Total</th><th style="text-align:right;">Difference</th><th>Note</th></tr></thead>
+            <tbody>{recon_rows}</tbody>
+        </table>
+        <div style="margin-top:8px; font-size:0.82rem;">
+            <strong>How this summary handles it:</strong> the 2018 headline, the conversion rate, and every
+            year-over-year comparison use <strong>{BSS_2018_RECONCILIATION['headline_used']:,}</strong>.
+            The country and length-of-stay breakdowns below use BSS's printed figures; where a split
+            sums to 678,538 the one-visitor difference is carried on the "1 Day" length-of-stay row so
+            the split still adds to the headline. The country Excel file (679,478) is flagged but not
+            used — its sum is 941 above the printed annual total.
+        </div>
+    </div>
+    """
+
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -1161,6 +1345,8 @@ def generate_html_summary():
         .conversion {{ background: #FFFBEB; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; border: 1px solid #FCD34D; }}
         .principle {{ background: #EFF6FF; color: #1E3A8A; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 16px 0; font-size: 0.85rem; border: 1px solid #93C5FD; }}
         .worldcup {{ background: #EFF6FF; color: #1E3A8A; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #3B82F6; margin: 16px 0; font-size: 0.85rem; border: 1px solid #93C5FD; }}
+        .recon {{ background: #FEF3C7; color: #78350F; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 16px 0; font-size: 0.85rem; border: 1px solid #FCD34D; }}
+        .recon table th {{ background: #92400E; }}
         .dedication {{ margin-top: 20px; padding: 15px; background: #F8F5F0; border-radius: 8px; text-align: center; font-style: italic; color: #00267F; font-weight: bold; }}
     </style></head>
     <body><div class="container">
@@ -1175,6 +1361,8 @@ def generate_html_summary():
         <div class="principle">
             <strong>🧭 This summary reports; it does not forecast.</strong> The figures below are drawn from published GAIA and BSS data and are labelled with their scope (full year / YTD / revised). No projection is included, because arrivals cannot be forecast reliably from these series alone — monthly country splits, forward bookings, and visitor spend are not in the data.
         </div>
+
+        {recon_block}
 
         <h2>1. GAIA vs. BSS — The Main Numbers</h2>
         <table>
@@ -1202,6 +1390,11 @@ def generate_html_summary():
         </div>
 
         <h2>2. Stay-Over Arrivals by Country of Residence</h2>
+        <div class="note" style="font-size:0.8rem;">
+            <strong>2018 split caveat:</strong> BSS Table 5 as printed sums to <strong>678,538</strong>
+            (one more than the headline); the country Excel file sums to <strong>679,478</strong>.
+            Shares below are computed against each year's own printed total so each column sums to 100%.
+        </div>
         <table>
             <thead>{country_header}</thead>
             <tbody>{country_body}</tbody>
@@ -1209,12 +1402,20 @@ def generate_html_summary():
 
         <h2>3. Stay-Over Arrivals by Purpose of Visit</h2>
         {methodology_note}
+        <div class="note" style="font-size:0.8rem;">
+            <strong>2018 purpose split:</strong> BSS Table 7 as printed sums to <strong>678,537</strong> — this matches the headline used throughout the summary.
+        </div>
         <table>
             <thead>{purpose_header}</thead>
             <tbody>{purpose_body}</tbody>
         </table>
 
         <h2>4. Stay-Over Arrivals by Length of Stay</h2>
+        <div class="note" style="font-size:0.8rem;">
+            <strong>2018 length-of-stay caveat:</strong> BSS Table 8 as printed sums to <strong>678,538</strong>.
+            The "1 Day" row in the table below carries the one-visitor difference so the split reconciles
+            to the headline <strong>678,537</strong> used elsewhere.
+        </div>
         <table>
             <thead>{length_header}</thead>
             <tbody>{length_body}</tbody>
@@ -1223,6 +1424,7 @@ def generate_html_summary():
         <h2>5. Sources</h2>
         <p><strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.</p>
         <p><strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable).</p>
+        <p><strong>2018 reconciliation:</strong> Headline 678,537 taken from Table 7 (Purpose of Visit) and the monthly PDFs. Table 5 (Country) and Table 8 (Length of Stay) print 678,538; the country Excel file sums to 679,478.</p>
         <p><strong>Kensington Oval Loan:</strong> Afreximbank press release, 19 April 2024; Barbados Today, 1 November 2023 — USD 25M (BDS$50M) term loan from Afreximbank to KOMI, guaranteed by the Government of Barbados.</p>
         <p><strong>2019:</strong> BSS figures are Jan–Sept YTD only.</p>
         <p><strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Sept YTD. Full sub-category breakdowns pending BSS release.</p>
@@ -1323,6 +1525,7 @@ st.caption(f"""
 **Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals (Free Public Edition — no forecast)**
 **Airport Traffic Source:** GAIA Inc. Passenger & Cargo Statistics (website). Operational traffic reports, not audited financial statements.
 **Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2026 BSS data is Jan–Apr YTD. GAIA 2026 data is Jan–Sept YTD.
+**2018 Reconciliation:** Headline 678,537 (Table 7 + monthly PDFs). Table 5 (Country) and Table 8 (Length of Stay) print 678,538; the country Excel file sums to 679,478. Documented on the Year-by-Year Explorer, Country Breakdown, Monthly Data Explorer, and HTML summary.
 **Proverbs:** "De Mortar-Pestle" by G. Addinton Forde (1987). Page numbers verified against source.
 **Author & Compiler:** Matthew A. A. Blackman
 **Generated:** {datetime.now().strftime('%B %d, %Y %I:%M %p')}
