@@ -20,9 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 7.2 (Free public edition — 2024 splits fully verified against latest 
-#              BSS web tables; 2024 added to HTML download tables; Length of Stay 
-#              dynamically sorted chronologically; 2026 GAIA Sept data added)
+# VERSION: 7.5 (Free public edition — 2018 Purpose of Visit sub-categories 
+#              consolidated to prevent double counting in HTML tables; 
+#              2022 Purpose updated to combined Recreation)
 # DATE: October 2026
 # ============================================================================
 
@@ -152,9 +152,10 @@ BSS_BY_COUNTRY = {
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
+# 2018 & 2022 Purpose updated to match BSS consolidated tables (Screenshot 1)
 BSS_PURPOSE = {
-    2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
-    2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
+    2018: {"Recreation": 571697, "Business": 79729, "Study": 4345, "Health Care": 1801, "Intransit": 10432, "Other": 10533},
+    2022: {"Recreation": 450288, "Business": 52354, "Study": 12635, "Health Care": 1768, "Intransit": 17773, "Other": 4928},
     2023: {"Recreation": 516496, "Business": 66815, "Study": 9365, "Health Care": 1760, "Intransit": 19421, "Other": 22683},
     2024: {"Recreation": 589843, "Business": 56600, "Study": 6876, "Health Care": 1732, "Intransit": 18371, "Other": 21246, "Special Event": 1863},
     2025: {"Recreation": 487150, "Business": 48940, "Study": 6842, "Health Care": 1575, "Intransit": 11291, "Other": 147120, "Special Event": 4128},
@@ -1127,6 +1128,13 @@ def generate_html_summary():
     vs_2018_delta = pct_2025 - pct_2018
     vs_2018_word = "below" if vs_2018_delta < 0 else ("above" if vs_2018_delta > 0 else "at")
 
+    # Methodology note for Purpose of Visit
+    methodology_note = """
+    <div style="background-color: #F8FAFC; border-left: 4px solid #64748B; padding: 10px 14px; margin-bottom: 12px; font-size: 0.8rem; color: #475569;">
+        <strong>📌 Note on Purpose of Visit:</strong> The BSS changed its reporting methodology over time. In <strong>2018 and 2022</strong>, sub-categories like Holiday, Visiting Friends, Honeymoon, and Sports were published as separate line items <em>in addition to</em> the overarching "Recreation" total. In <strong>2023, 2024, and 2025</strong>, the BSS stopped publishing the granular breakdown and only published the combined "Recreation" total. Therefore, the 2018/2022 rows show more categories, but the "Recreation" line remains the accurate overarching total for all years.
+    </div>
+    """
+
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -1197,6 +1205,7 @@ def generate_html_summary():
         </table>
 
         <h2>3. Stay-Over Arrivals by Purpose of Visit</h2>
+        {methodology_note}
         <table>
             <thead>{purpose_header}</thead>
             <tbody>{purpose_body}</tbody>
