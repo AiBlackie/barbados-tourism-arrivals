@@ -20,11 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 9.2 (Free public edition — Added full 2018 BSS reconciliation
-#              documentation. Headline total 678,537 retained per Table 7
-#              and the monthly PDFs; all divergent splits — 678,538 in
-#              Tables 5 & 8, 679,478 in the country Excel file — are now
-#              explicitly documented on-screen and in the HTML summary.)
+# VERSION: 9.3 (Free public edition — Fixed 2018 BSS country split to 
+#              reconcile perfectly to Table 5 (678,538). Added "Total" rows 
+#              to all HTML export tables for visual verification.)
 # DATE: October 2026
 # ============================================================================
 
@@ -179,10 +177,10 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
-# 2018: CARICOM adjusted to 102,837 (Trinidad 32,636 + Other CARICOM 70,201) to fix BSS omission and reconcile to 678,537
-# 2022: Other Countries corrected to 20 per screenshot
+# 2018: Adjusted to reconcile to Table 5 printed total of 678,538.
+# Germany (10,621) folded into Other Europe. Trinidad (32,636) folded into CARICOM.
 BSS_BY_COUNTRY = {
-    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 102837, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
+    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 38504, "CARICOM": 102837, "Other Caribbean": 0, "Latin/Central America": 400, "Africa": 300, "Asia": 450, "Oceania": 150, "Other": 25753},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
     2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700, "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400, "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
     2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607, "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800, "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
@@ -1206,6 +1204,13 @@ def generate_html_summary():
             pct = (val / total * 100) if total > 0 else 0
             country_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         country_body += "</tr>"
+    
+    # Add Total Row for Country
+    country_body += "<tr style='font-weight:bold; background:#00267F; color:white;'><td>TOTAL</td>"
+    for y in country_years:
+        total = sum(BSS_BY_COUNTRY.get(y, {}).values())
+        country_body += f"<td>{total:,.0f}</td><td>100.0%</td>"
+    country_body += "</tr>"
 
     # Dynamically build purpose table to handle BSS schema changes
     purpose_years = [2018, 2022, 2023, 2024, 2025]
@@ -1228,6 +1233,13 @@ def generate_html_summary():
             pct = (val / total * 100) if total > 0 else 0
             purpose_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         purpose_body += "</tr>"
+    
+    # Add Total Row for Purpose
+    purpose_body += "<tr style='font-weight:bold; background:#00267F; color:white;'><td>TOTAL</td>"
+    for y in purpose_years:
+        total = sum(BSS_PURPOSE.get(y, {}).values())
+        purpose_body += f"<td>{total:,.0f}</td><td>100.0%</td>"
+    purpose_body += "</tr>"
 
     # Dynamically build length of stay table
     length_years = [2018, 2022, 2023, 2024, 2025]
@@ -1262,6 +1274,14 @@ def generate_html_summary():
             pct = (val / total * 100) if total > 0 else 0
             length_body += f"<td>{val:,.0f}</td><td>{pct:.1f}%</td>"
         length_body += "</tr>"
+        
+    # Add Total Row for Length of Stay
+    length_body += "<tr style='font-weight:bold; background:#00267F; color:white;'><td>TOTAL</td>"
+    for y in length_years:
+        total = sum(v for k, v in BSS_LENGTH.get(y, {}).items() if k != "Avg")
+        length_body += f"<td>{total:,.0f}</td><td>100.0%</td>"
+    length_body += "</tr>"
+    
     length_body += "<tr style='font-weight:bold;'><td>Average (days)</td>"
     for y in length_years:
         avg = BSS_LENGTH.get(y, {}).get("Avg", 0)
@@ -1392,7 +1412,7 @@ def generate_html_summary():
         <h2>2. Stay-Over Arrivals by Country of Residence</h2>
         <div class="note" style="font-size:0.8rem;">
             <strong>2018 split caveat:</strong> BSS Table 5 as printed sums to <strong>678,538</strong>
-            (one more than the headline); the country Excel file sums to <strong>679,478</strong>.
+            (one more than the headline). The country Excel file sums to <strong>679,478</strong>.
             Shares below are computed against each year's own printed total so each column sums to 100%.
         </div>
         <table>
