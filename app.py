@@ -20,9 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 6.5 (Free public edition — 2023 Cruise and Stay-Over categories updated 
-#              to match latest BSS website revisions; 2024 categories updated; 
-#              2018 reconciled to monthly PDFs; 2026 partial-year kept out of charts)
+# VERSION: 6.6 (Free public edition — 2018 reverted to exact BSS PDF totals 
+#              of 678,537; 2023 and 2024 categories updated to revised BSS website; 
+#              2026 partial-year kept out of charts)
 # DATE: October 2026
 # ============================================================================
 
@@ -107,8 +107,9 @@ GAIA_MONTHLY = {
 GAIA_PASSENGERS = {year: sum(v for v in data.values() if v is not None) for year, data in GAIA_MONTHLY.items()}
 
 # --- BSS STAY-OVER ARRIVALS (Monthly) ---
+# 2018 reverted to exact official BSS PDF totals
 BSS_STAY_OVER_MONTHLY = {
-    2018: {1: 65970, 2: 66916, 3: 70445, 4: 57054, 5: 50255, 6: 46334, 7: 55623, 8: 51995, 9: 35759, 10: 46519, 11: 59657, 12: 72951},
+    2018: {1: 65970, 2: 66916, 3: 70445, 4: 57054, 5: 50255, 6: 46334, 7: 55623, 8: 51995, 9: 35759, 10: 46519, 11: 59483, 12: 72184},
     2019: {1: 69496, 2: 68609, 3: 70669, 4: 63364, 5: 50717, 6: 50160, 7: 60248, 8: 50757, 9: 36861, 10: None, 11: None, 12: None}, # Q4 missing
     2020: {1: 59572, 2: 63124, 3: 31152, 4: 136, 5: 346, 6: 494, 7: 2056, 8: 6102, 9: 4867, 10: 2389, 11: 6669, 12: 18195},
     2021: {1: 3547, 2: 1880, 3: 1769, 4: 1865, 5: 3362, 6: 6448, 7: 11524, 8: 15620, 9: 17209, 10: 18504, 11: 23749, 12: 39356},
@@ -119,14 +120,12 @@ BSS_STAY_OVER_MONTHLY = {
     2026: {1: 74206, 2: 69155, 3: 71583, 4: 57790, 5: None, 6: None, 7: None, 8: None, 9: None, 10: None, 11: None, 12: None} # Jan-Apr only
 }
 BSS_STAY_OVER = {year: sum(v for v in data.values() if v is not None) for year, data in BSS_STAY_OVER_MONTHLY.items()}
-# Override 2018 to exact sum of the monthly arrivals (679,478)
-BSS_STAY_OVER[2018] = 679478
+# Override 2018 to exact official BSS PDF total (678,537)
+BSS_STAY_OVER[2018] = 678537
 # Override 2019 to YTD (520,881)
 BSS_STAY_OVER[2019] = 520881
 
 # --- BSS CRUISE ARRIVALS (Monthly) ---
-# 2023 updated to match BSS revised website tables (Screenshot 1)
-# 2024 updated to match BSS revised website tables (Screenshot 1 from prev turn)
 BSS_CRUISE_MONTHLY = {
     2018: {1: 152392, 2: 115862, 3: 115862, 4: 63033, 5: 22262, 6: 20105, 7: 18982, 8: 21960, 9: 22982, 10: 19253, 11: 113043, 12: 150419},
     2019: {1: 141766, 2: 113575, 3: 119576, 4: 75565, 5: 21399, 6: 19675, 7: 19807, 8: 25872, 9: 19936, 10: None, 11: None, 12: None}, # Q4 missing
@@ -143,9 +142,9 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
-# 2023 & 2024 updated to match BSS revised website tables (Screenshots 4 & 5)
+# 2018 matches BSS PDF exact totals (Dec 2018, Table 5)
 BSS_BY_COUNTRY = {
-    2018: {"U.S.A": 204274, "Canada": 86600, "U.K": 221167, "Other Europe": 38552, "CARICOM": 103051, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
+    2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
     2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700, "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400, "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
     2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607, "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800, "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
@@ -155,7 +154,7 @@ BSS_BY_COUNTRY = {
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
-# 2023 & 2024 updated to match BSS revised website tables (Screenshot 3)
+# 2018 matches BSS PDF exact totals (Dec 2018, Table 7)
 BSS_PURPOSE = {
     2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
     2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
@@ -164,7 +163,7 @@ BSS_PURPOSE = {
     2025: {"Recreation": 487150, "Holiday": 426035, "Visiting Friends": 0, "Business": 48940, "Study": 6842, "Health Care": 1575, "Honeymoon": 0, "Sports": 0, "Intransit": 11291, "Other": 147120},
 }
 
-# 2023 & 2024 updated to match BSS revised website tables (Screenshot 2)
+# 2018 matches BSS PDF exact totals (Dec 2018, Table 8)
 BSS_LENGTH = {
     2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
