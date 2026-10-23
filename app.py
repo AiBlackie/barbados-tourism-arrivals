@@ -20,8 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 7.1 (Free public edition — HTML Length of Stay table sorted 
-#              chronologically; dynamic category handling refined)
+# VERSION: 7.2 (Free public edition — 2024 splits fully verified against latest 
+#              BSS web tables; 2024 added to HTML download tables; Length of Stay 
+#              dynamically sorted chronologically; 2026 GAIA Sept data added)
 # DATE: October 2026
 # ============================================================================
 
@@ -1033,7 +1034,7 @@ def generate_html_summary():
         </tr>
         """
 
-    country_years = [2018, 2022, 2023, 2025]
+    country_years = [2018, 2022, 2023, 2024, 2025]
     countries = ["U.K", "U.S.A", "Canada", "CARICOM", "Other Europe", "Other Caribbean", "Latin/Central America", "Africa", "Asia", "Oceania", "Other"]
     country_header = "<tr><th>Country</th>"
     for y in country_years:
@@ -1050,7 +1051,7 @@ def generate_html_summary():
         country_body += "</tr>"
 
     # Dynamically build purpose table to handle BSS schema changes
-    purpose_years = [2018, 2022, 2023, 2025]
+    purpose_years = [2018, 2022, 2023, 2024, 2025]
     all_purposes = set()
     for y in purpose_years:
         if y in BSS_PURPOSE:
@@ -1072,7 +1073,7 @@ def generate_html_summary():
         purpose_body += "</tr>"
 
     # Dynamically build length of stay table
-    length_years = [2018, 2022, 2023, 2025]
+    length_years = [2018, 2022, 2023, 2024, 2025]
     all_lengths = set()
     for y in length_years:
         if y in BSS_LENGTH:
