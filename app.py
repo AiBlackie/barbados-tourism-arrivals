@@ -20,9 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 6.3 (Free public edition — 2018 BSS annual total and sub-categories 
-#              perfectly reconciled to the sum of the 12 monthly PDF bulletins; 
-#              2026 partial-year kept out of charts)
+# VERSION: 6.5 (Free public edition — 2023 Cruise and Stay-Over categories updated 
+#              to match latest BSS website revisions; 2024 categories updated; 
+#              2018 reconciled to monthly PDFs; 2026 partial-year kept out of charts)
 # DATE: October 2026
 # ============================================================================
 
@@ -125,14 +125,16 @@ BSS_STAY_OVER[2018] = 679478
 BSS_STAY_OVER[2019] = 520881
 
 # --- BSS CRUISE ARRIVALS (Monthly) ---
+# 2023 updated to match BSS revised website tables (Screenshot 1)
+# 2024 updated to match BSS revised website tables (Screenshot 1 from prev turn)
 BSS_CRUISE_MONTHLY = {
     2018: {1: 152392, 2: 115862, 3: 115862, 4: 63033, 5: 22262, 6: 20105, 7: 18982, 8: 21960, 9: 22982, 10: 19253, 11: 113043, 12: 150419},
     2019: {1: 141766, 2: 113575, 3: 119576, 4: 75565, 5: 21399, 6: 19675, 7: 19807, 8: 25872, 9: 19936, 10: None, 11: None, 12: None}, # Q4 missing
     2020: {1: 147012, 2: 115356, 3: 81363, 4: 3, 5: 31, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 26, 12: 0},
     2021: {1: 0, 2: 0, 3: 0, 4: 36, 5: 1, 6: 2012, 7: 2082, 8: 1961, 9: 403, 10: 1945, 11: 25261, 12: 63749},
     2022: {1: 47149, 2: 38922, 3: 55154, 4: 34664, 5: 1, 6: 0, 7: 0, 8: 0, 9: 2281, 10: 11638, 11: 62495, 12: 105550},
-    2023: {1: 122403, 2: 114243, 3: 124430, 4: 68366, 5: 5123, 6: 0, 7: 0, 8: 0, 9: 0, 10: 6766, 11: 84725, 12: 130938},
-    2024: {1: 127562, 2: 128410, 3: 137893, 4: 60188, 5: 13304, 6: 7671, 7: 7022, 8: 13107, 9: 6570, 10: 13981, 11: 113417, 12: 0},
+    2023: {1: 122403, 2: 114243, 3: 124430, 4: 68366, 5: 5123, 6: 0, 7: 0, 8: 0, 9: 0, 10: 6676, 11: 84725, 12: 130938},
+    2024: {1: 128138, 2: 128410, 3: 139673, 4: 49151, 5: 12845, 6: 7514, 7: 7013, 8: 13107, 9: 6570, 10: 13995, 11: 101624, 12: 129153},
     2025: {1: 157093, 2: 114524, 3: 113851, 4: 46332, 5: 2212, 6: 5170, 7: 4750, 8: 8609, 9: 10031, 10: 23855, 11: 96262, 12: 156246},
     2026: {1: 188561, 2: 148170, 3: 137229, 4: 55658, 5: None, 6: None, 7: None, 8: None, 9: None, 10: None, 11: None, 12: None}
 }
@@ -141,9 +143,7 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
-# 2018 figures updated to exactly match the sum of the 12 monthly BSS PDFs:
-# U.S.A 204,274; Canada 86,600; U.K 221,167; Other Europe 38,552 (Germany 10,595 + Other 27,957); 
-# CARICOM 103,051 (Trinidad & Tobago 32,674 + Other 70,377); Other 25,834.
+# 2023 & 2024 updated to match BSS revised website tables (Screenshots 4 & 5)
 BSS_BY_COUNTRY = {
     2018: {"U.S.A": 204274, "Canada": 86600, "U.K": 221167, "Other Europe": 38552, "CARICOM": 103051, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
@@ -155,14 +155,16 @@ BSS_BY_COUNTRY = {
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
+# 2023 & 2024 updated to match BSS revised website tables (Screenshot 3)
 BSS_PURPOSE = {
     2018: {"Recreation": 571697, "Holiday": 520499, "Visiting Friends": 30304, "Business": 79729, "Study": 4345, "Health Care": 1801, "Honeymoon": 7204, "Sports": 6466, "Intransit": 10432, "Other": 10533},
     2022: {"Recreation": 450288, "Holiday": 376785, "Visiting Friends": 41347, "Business": 52354, "Study": 12635, "Health Care": 1768, "Honeymoon": 20330, "Sports": 5140, "Intransit": 17773, "Other": 4928},
-    2023: {"Recreation": 516496, "Holiday": 428574, "Visiting Friends": 52293, "Business": 66815, "Study": 9365, "Health Care": 1760, "Honeymoon": 20345, "Sports": 7381, "Intransit": 19421, "Other": 22683},
-    2024: {"Recreation": 589843, "Holiday": 564538, "Visiting Friends": 0, "Business": 56600, "Study": 6876, "Health Care": 1732, "Honeymoon": 0, "Sports": 0, "Intransit": 18371, "Other": 21246},
+    2023: {"Recreation": 516496, "Business": 66815, "Study": 9365, "Health Care": 1760, "Intransit": 19421, "Other": 22683},
+    2024: {"Recreation": 589843, "Business": 56600, "Study": 6876, "Health Care": 1732, "Intransit": 18371, "Other": 21246, "Special Event": 1863},
     2025: {"Recreation": 487150, "Holiday": 426035, "Visiting Friends": 0, "Business": 48940, "Study": 6842, "Health Care": 1575, "Honeymoon": 0, "Sports": 0, "Intransit": 11291, "Other": 147120},
 }
 
+# 2023 & 2024 updated to match BSS revised website tables (Screenshot 2)
 BSS_LENGTH = {
     2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
@@ -343,7 +345,7 @@ def render_overview():
     fig.update_yaxes(title_text="Number of People", tickformat=",")
     st.plotly_chart(fig, use_container_width=True)
 
-    st.caption(f"Note: 2019 BSS figures are Jan–Sept YTD only. 2022, 2024, and {LATEST_FULL_YEAR} BSS figures are revised. {LATEST_PARTIAL_YEAR} is partial-year data (BSS Jan–Apr, GAIA Jan–Aug) and is shown in the callout above, not on the chart.")
+    st.caption(f"Note: 2019 BSS figures are Jan–Sept YTD only. 2022, 2023, 2024, and {LATEST_FULL_YEAR} BSS figures are revised. {LATEST_PARTIAL_YEAR} is partial-year data (BSS Jan–Apr, GAIA Jan–Aug) and is shown in the callout above, not on the chart.")
 
 # ============================================================================
 # VIEW: TWO VISITOR STREAMS
@@ -448,7 +450,7 @@ def render_year_explorer():
         <div class="metric-card" style="border-left:4px solid #10B981;">
             <div class="metric-label">BSS Stay-Over Arrivals</div>
             <div class="metric-value" style="color:#059669;">{format_number(BSS_STAY_OVER[year])}</div>
-            <div class="metric-context">{get_badge('revised' if year in [2022, 2024, 2025] else 'bss')} {'(Jan-Apr YTD)' if year == 2026 else '(Jan-Sept YTD)' if year == 2019 else ''}</div>
+            <div class="metric-context">{get_badge('revised' if year in [2022, 2023, 2024, 2025] else 'bss')} {'(Jan-Apr YTD)' if year == 2026 else '(Jan-Sept YTD)' if year == 2019 else ''}</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
@@ -634,7 +636,7 @@ def render_cruise():
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2024 cruise is missing December; 2026 is shown in the callout on the Overview, not on this chart.")
+    st.caption("Source: Barbados Statistical Service. 2019 is Jan–Sept YTD. 2023 and 2024 revised; 2026 is shown in the callout on the Overview, not on this chart.")
 
     st.markdown("### 📊 The Numbers Side by Side")
     rows = []
@@ -981,7 +983,7 @@ def render_conclusion():
         <div class="evidence-label">Data Sources</div>
         <div class="evidence-text">
         <strong>GAIA Total Passengers:</strong> GAIA Inc. Passenger &amp; Cargo Statistics (website). Operational traffic reports, not audited financial statements.<br>
-        <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2024, and 2025 revision notes).<br>
+        <strong>BSS Stay-Over and Cruise Arrivals:</strong> Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes).<br>
         <strong>2019:</strong> BSS figures are Jan–Sept YTD only. October–December 2019 bulletins were not available.<br>
         <strong>2026:</strong> BSS data is Jan–Apr YTD. GAIA data is Jan–Aug YTD. Full sub-category breakdowns are pending release.
         </div>
@@ -1289,7 +1291,7 @@ st.markdown("---")
 st.caption(f"""
 **Barbados Tourism Arrivals — Airport Traffic vs. Visitor Arrivals (Free Public Edition — no forecast)**
 **Airport Traffic Source:** GAIA Inc. Passenger & Cargo Statistics (website). Operational traffic reports, not audited financial statements.
-**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2024, and 2025 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2026 BSS data is Jan–Apr YTD. GAIA 2026 data is Jan–Aug YTD.
+**Visitor Arrivals Source:** Barbados Statistical Service, Visitor Arrivals Statistics (revised where applicable — see 2022, 2023, 2024, and 2025 revision notes). 2019 BSS figures are Jan–Sept YTD only. 2026 BSS data is Jan–Apr YTD. GAIA 2026 data is Jan–Aug YTD.
 **Proverbs:** "De Mortar-Pestle" by G. Addinton Forde (1987). Page numbers verified against source.
 **Author & Compiler:** Matthew A. A. Blackman
 **Generated:** {datetime.now().strftime('%B %d, %Y %I:%M %p')}
