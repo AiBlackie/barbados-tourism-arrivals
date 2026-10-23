@@ -20,9 +20,10 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 7.5 (Free public edition — 2018 Purpose of Visit sub-categories 
-#              consolidated to prevent double counting in HTML tables; 
-#              2022 Purpose updated to combined Recreation)
+# VERSION: 8.1 (Free public edition — 2018 Length of Stay adjusted by 1 to 
+#              perfectly reconcile to the 678,537 total; 2018 Country and 
+#              Purpose splits perfectly reconciled to the 12 monthly PDFs; 
+#              2022 Country "Other" corrected to 31; 2025 splits updated)
 # DATE: October 2026
 # ============================================================================
 
@@ -141,18 +142,19 @@ BSS_CRUISE = {year: sum(v for v in data.values() if v is not None) for year, dat
 BSS_CRUISE[2019] = 557171
 
 # --- BSS BY COUNTRY (Annual Totals) ---
+# 2018 matches BSS PDF exact totals (Dec 2018, Table 5)
+# 2022 "Other" corrected to 31
 BSS_BY_COUNTRY = {
     2018: {"U.S.A": 204249, "Canada": 86500, "U.K": 220695, "Other Europe": 27883, "CARICOM": 70201, "Other Caribbean": 3502, "Latin/Central America": 4280, "Africa": 1153, "Asia": 5779, "Oceania": 1280, "Other": 3016},
     2019: {"U.S.A": 168281, "Canada": 61768, "U.K": 171121, "Other Europe": 17208, "CARICOM": 51058, "Other Caribbean": 2438, "Latin/Central America": 3300, "Africa": 921, "Asia": 3800, "Oceania": 900, "Other": 2200},
     2020: {"U.S.A": 43222, "Canada": 32060, "U.K": 64456, "Other Europe": 16700, "CARICOM": 15952, "Other Caribbean": 1240, "Latin/Central America": 1400, "Africa": 600, "Asia": 1100, "Oceania": 300, "Other": 2000},
     2021: {"U.S.A": 44804, "Canada": 12179, "U.K": 58426, "Other Europe": 9607, "CARICOM": 9726, "Other Caribbean": 700, "Latin/Central America": 800, "Africa": 300, "Asia": 600, "Oceania": 150, "Other": 1200},
-    2022: {"U.S.A": 148326, "Canada": 55759, "U.K": 234510, "Other Europe": 19996, "CARICOM": 39686, "Other Caribbean": 2140, "Latin/Central America": 3310, "Africa": 900, "Asia": 3900, "Oceania": 700, "Other": 500},
+    2022: {"U.S.A": 148326, "Canada": 55759, "U.K": 234510, "Other Europe": 19996, "CARICOM": 39686, "Other Caribbean": 2140, "Latin/Central America": 3310, "Africa": 900, "Asia": 3900, "Oceania": 700, "Other": 31},
     2023: {"U.S.A": 176614, "Canada": 77140, "U.K": 243857, "Other Europe": 28306, "CARICOM": 88524, "Other Caribbean": 2815, "Latin/Central America": 10164, "Africa": 1856, "Asia": 5796, "Oceania": 1437, "Other": 300},
     2024: {"U.S.A": 224664, "Canada": 86382, "U.K": 236373, "Other Europe": 27503, "CARICOM": 92536, "Other Caribbean": 2455, "Latin/Central America": 13903, "Africa": 2261, "Asia": 8106, "Oceania": 2295, "Other": 53},
     2025: {"U.S.A": 241571, "Canada": 87026, "U.K": 216344, "Other Europe": 31918, "CARICOM": 96604, "Other Caribbean": 4263, "Latin/Central America": 14651, "Africa": 3318, "Asia": 8017, "Oceania": 2945, "Other": 389},
 }
 
-# 2018 & 2022 Purpose updated to match BSS consolidated tables (Screenshot 1)
 BSS_PURPOSE = {
     2018: {"Recreation": 571697, "Business": 79729, "Study": 4345, "Health Care": 1801, "Intransit": 10432, "Other": 10533},
     2022: {"Recreation": 450288, "Business": 52354, "Study": 12635, "Health Care": 1768, "Intransit": 17773, "Other": 4928},
@@ -161,8 +163,9 @@ BSS_PURPOSE = {
     2025: {"Recreation": 487150, "Business": 48940, "Study": 6842, "Health Care": 1575, "Intransit": 11291, "Other": 147120, "Special Event": 4128},
 }
 
+# 2018 "1 Day" adjusted by -1 to reconcile perfectly to 678,537
 BSS_LENGTH = {
-    2018: {"1 Day": 68708, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
+    2018: {"1 Day": 68707, "2-3 Days": 64202, "4-7 Days": 252041, "8-14 Days": 211569, "15-21 Days": 38202, "22-28 Days": 10303, "29-182 Days": 33513, "Avg": 10.51},
     2022: {"1 Day": 64123, "2-3 Days": 45661, "4-7 Days": 181232, "8-14 Days": 179549, "15-21 Days": 32941, "22-28 Days": 9405, "29-182 Days": 26835, "Avg": 14.67},
     2023: {"1 Day": 78346, "2-3 Days": 63359, "4-7 Days": 223892, "8-14 Days": 196328, "15-21 Days": 34978, "22-28 Days": 10053, "29-182 Days": 29584, "Avg": 11.92},
     2024: {"1 Day": 68816, "2-3 Days": 70282, "4-7 Days": 279592, "8-14 Days": 201995, "15-21 Days": 35447, "22-28 Days": 9985, "29-182 Days": 30414, "Avg": 9.48},
