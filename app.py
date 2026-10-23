@@ -20,10 +20,9 @@
 #     Barbados Today (November 1, 2023)
 #
 # AUTHOR & COMPILER: Matthew A. A. Blackman
-# VERSION: 8.1 (Free public edition — 2018 Length of Stay adjusted by 1 to 
-#              perfectly reconcile to the 678,537 total; 2018 Country and 
-#              Purpose splits perfectly reconciled to the 12 monthly PDFs; 
-#              2022 Country "Other" corrected to 31; 2025 splits updated)
+# VERSION: 8.2 (Free public edition — Methodology note updated to clarify 
+#              that 2018 and 2022 splits use the consolidated 2023+ schema 
+#              for direct comparison; 2018 Length of Stay reconciles to 678,537)
 # DATE: October 2026
 # ============================================================================
 
@@ -1134,7 +1133,7 @@ def generate_html_summary():
     # Methodology note for Purpose of Visit
     methodology_note = """
     <div style="background-color: #F8FAFC; border-left: 4px solid #64748B; padding: 10px 14px; margin-bottom: 12px; font-size: 0.8rem; color: #475569;">
-        <strong>📌 Note on Purpose of Visit:</strong> The BSS changed its reporting methodology over time. In <strong>2018 and 2022</strong>, sub-categories like Holiday, Visiting Friends, Honeymoon, and Sports were published as separate line items <em>in addition to</em> the overarching "Recreation" total. In <strong>2023, 2024, and 2025</strong>, the BSS stopped publishing the granular breakdown and only published the combined "Recreation" total. Therefore, the 2018/2022 rows show more categories, but the "Recreation" line remains the accurate overarching total for all years.
+        <strong>📌 Note on Purpose of Visit:</strong> The BSS changed its reporting methodology over time. For consistency, this table applies the consolidated methodology used in <strong>2023, 2024, and 2025</strong> (grouping sub-categories into a single "Recreation" total) to the data for <strong>2018 and 2022</strong>. This allows for a direct year-over-year comparison across all years.
     </div>
     """
 
